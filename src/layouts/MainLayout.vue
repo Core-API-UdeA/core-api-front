@@ -1,81 +1,80 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+    <q-header class="bg-black">
+      <q-toolbar class="row justify-between q-pa-md">
+        <div>
+          <q-img
+            src="~assets/core-api-isotipo.png"
+            alt="Logo"
+            style="width: 30px; height: 30px"
+            class="q-mb-sm"
+          />
+        </div>
 
-        <q-toolbar-title> CORE API </q-toolbar-title>
+        <div class="flex flex-center cursor-pointer" @click="$router.push('/')">
+          <q-img src="~assets/core api.png" alt="Logo" style="width: 100px" class="q-mb-sm" />
+        </div>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div class="row items-center q-gutter-x-sm">
+          <q-btn flat round dense no-caps icon="fab fa-instagram" class="text-white" />
+          <q-btn flat round dense no-caps icon="fab fa-github" class="text-white" />
+          <q-btn
+            label="Sign In"
+            class="text-white"
+            color="primary"
+            unelevated
+            no-caps
+            style="border-radius: 10px"
+            to="/login"
+          />
+          <q-btn
+            label="Sign Up"
+            class="text-white"
+            color="accentitems"
+            unelevated
+            no-caps
+            style="border-radius: 10px"
+            :to="{ path: '/login/register' }"
+          />
+        </div>
       </q-toolbar>
     </q-header>
-
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list>
-        <q-item-label header> Essential Links </q-item-label>
-
-        <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
-      </q-list>
-    </q-drawer>
 
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <q-footer class="bg-dark text-white">
+      <div class="row q-gutter-x-sm flex flex-center q-pt-sm">
+        <q-btn
+          flat
+          no-caps
+          label="Términos y Condiciones"
+          class="text-white"
+          @click="$router.push('/terminos')"
+        />
+        <q-btn
+          flat
+          no-caps
+          label="Contacto"
+          class="text-white"
+          @click="$router.push('/contacto')"
+        />
+        <q-btn
+          flat
+          no-caps
+          label="¿Quiénes somos?"
+          class="text-white"
+          @click="$router.push('/quienes-somos')"
+        />
+      </div>
+      <div class="row justify-center q-pb-md text-accentitems text-weight-light">
+        <span>&copy; 2025 Core API. All rights reserved.</span>
+      </div>
+    </q-footer>
   </q-layout>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
-
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
-  },
-]
-
-const leftDrawerOpen = ref(false)
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
 </script>

@@ -9,7 +9,7 @@
             style="width: 30px; height: 30px"
             class="q-mb-sm"
           />
-          <div class="text-h4 q-ml-sm text-white text-bold">Login</div>
+          <div class="text-h4 q-ml-sm text-white text-bold">Register</div>
         </div>
       </q-card-section>
 

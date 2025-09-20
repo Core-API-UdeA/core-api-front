@@ -2,7 +2,6 @@
   <transition name="fade">
     <q-card
       v-if="visible"
-      flat
       style="height: 100%; width: 50%"
       :style="isLogin ? 'border-radius: 350px 0 0 200px;' : 'border-radius: 0 350px 200px 0;'"
       class="mixed-color flex flex-center"
@@ -15,9 +14,9 @@
           {{ isLogin ? 'Hello, Friend!' : 'Welcome back!' }}
           <div class="text-weight-thin" style="font-size: 1.2vmax; width: 420px">
             {{
-              isLogin
-                ? 'Register using your personal information to access all of our features.'
-                : 'Enter your personal details to access all of our features.'
+                isLogin
+                ? "Don't have an account? Sign up to access all our features."
+                : 'Already have an account? Sign in to access all our features.'
             }}
           </div>
         </div>
@@ -31,6 +30,19 @@
             outline
             @click="emit('toggleForm')"
             color="white"
+          />
+        </div>
+
+        <div class="flex flex-center" style="margin-top: 20px">
+          <q-btn
+            style="padding: 0 30px 0 30px; font-size: 0.6vmax; border-radius: 10px"
+            dense
+            no-caps
+            flat
+            color="white"
+            label="volver atras"
+            @click="$router.go(-1)"
+            icon="arrow_back"
           />
         </div>
       </q-card-section>
@@ -57,6 +69,7 @@ const emit = defineEmits(['toggleForm'])
 <style lang="scss" scoped>
 .mixed-color {
   background: linear-gradient(90deg, #06cccc 14%, #0a4c52 100%);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.486);
 }
 
 .fade-enter-active,

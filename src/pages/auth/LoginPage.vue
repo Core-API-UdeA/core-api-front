@@ -24,18 +24,27 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, ref } from 'vue'
+import { defineAsyncComponent, ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 const LoginForm = defineAsyncComponent(() => import('src/components/auth/LoginForm.vue'))
 const RegisterForm = defineAsyncComponent(() => import('src/components/auth/RegisterForm.vue'))
 const TransitionForm = defineAsyncComponent(() => import('src/components/auth/TransitionForm.vue'))
 
+const route = useRoute()
 const isLogin = ref(true)
+
+onMounted(() => {
+  if (route.params.isRegister === 'register') {
+    isLogin.value = false
+  }
+})
 
 function toggleForm() {
   isLogin.value = !isLogin.value
 }
 </script>
+
 
 <style lang="scss" scoped>
 .auth-container {

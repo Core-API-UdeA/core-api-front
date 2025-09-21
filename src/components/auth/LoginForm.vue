@@ -1,6 +1,6 @@
 <template>
   <q-card flat class="bg-transparent flex flex-center q-pt-xl" style="width: 100%">
-    <q-form submit.prevent="handleSubmit" style="width: 400px; max-width: 90vw" class="q-pt-xl">
+    <q-form :submit.prevent="login" style="width: 400px; max-width: 90vw" class="q-pt-xl">
       <q-card-section style="display: flex; align-items: center; justify-content: center">
         <div class="row items-center">
           <q-img
@@ -98,15 +98,50 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import { ref } from 'vue'
+import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from 'stores/auth-store'
 
 const email = ref('')
 const password = ref('')
 const togglePasswordVisibility = ref(false)
 
+const authStore = useAuthStore()
+const $q = useQuasar()
+const router = useRouter()
+
+async function login() {
+  try {
+    $q.loading.show({
+      backgroundColor: '#fff',
+      message: 'Ingresando a la aplicación ...',
+      messageColor: 'white',
+    })
+
+    await authStore.login(email.value, password.value)
+    authStore.loginCallback()
+
+    if (authStore.loggedIn) {
+      router.push('/main')
+    }
+  } catch (error) {
+    $q.notify({
+      progress: true,
+      message: error.message,
+      icon: 'warning',
+      color: 'white',
+      textColor: 'negative',
+    })
+  } finally {
+    $q.loading.hide()
+  }
+}
+
 function resetPassword() {
-  // Logic to handle password reset
   console.log('Reset password clicked')
 }
+
+
 </script>
 
 <style lang="scss" scoped>

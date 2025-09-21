@@ -12,6 +12,18 @@ const routes = [
   },
 
   {
+    path: '/main',
+    component: () => import('layouts/HomeLayout.vue'),
+    meta: { authRequired: true },
+    children: [
+      {
+        path: '',
+        component: () => import('pages/HomePage.vue'),
+      },
+    ],
+  },
+
+  {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue'),
   },

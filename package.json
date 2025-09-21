@@ -18,6 +18,8 @@
     "@iconify/vue": "^5.0.0",
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
+    "dotenv": "^17.2.2",
+    "jwt-decode": "^4.0.0",
     "pinia": "^3.0.1",
     "quasar": "^2.16.0",
     "vue": "3.5.20",

@@ -3,6 +3,11 @@
 
 import { defineConfig } from '#q-app/wrappers'
 import { fileURLToPath } from 'node:url'
+import dotenv from 'dotenv'
+import { resolve } from 'path'
+dotenv.config({ path: resolve('./.env.production') })
+
+console.log('BASE_URL_API (desde .env):', process.env.BASE_URL_API)
 
 export default defineConfig((ctx) => {
   return {
@@ -12,7 +17,7 @@ export default defineConfig((ctx) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['i18n', 'axios'],
+    boot: ['i18n', 'axios', 'auth'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
     css: ['app.scss'],
@@ -47,7 +52,13 @@ export default defineConfig((ctx) => {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: {
+        BASE_URL_API: process.env.BASE_URL_API || 'http://localhost:1337',
+        PREFIX: process.env.PREFIX || '/scapi',
+        SECRET_ROUTE_KEY: process.env.SECRET_ROUTE_KEY || 'FraseSecretaEncriptacion',
+        LOGIN_ROUTE: '/auth/login',
+        FETCH_ROUTE: '/auth/fetch',
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -75,11 +86,7 @@ export default defineConfig((ctx) => {
           },
         ],
 
-        [
-          'vite-plugin-checker',
-          {},
-          { server: false },
-        ],
+        ['vite-plugin-checker', {}, { server: false }],
       ],
     },
 

@@ -58,6 +58,7 @@ export default defineConfig((ctx) => {
         SECRET_ROUTE_KEY: process.env.SECRET_ROUTE_KEY || 'FraseSecretaEncriptacion',
         LOGIN_ROUTE: '/auth/login',
         FETCH_ROUTE: '/auth/fetch',
+        REGISTER_ROUTE: '/auth/register',
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

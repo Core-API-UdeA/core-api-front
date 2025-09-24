@@ -4,6 +4,7 @@ import { useQuasar, Cookies } from 'quasar'
 import { ref, computed } from 'vue'
 
 const LOGIN_API_ROUTE = process.env.LOGIN_ROUTE
+const LOGIN_GOOGLE_API_ROUTE = process.env.LOGIN_GOOGLE_ROUTE
 const FETCH_API_ROUTE = process.env.FETCH_ROUTE
 const REGISTER_API_ROUTE = process.env.REGISTER_ROUTE
 
@@ -98,6 +99,50 @@ export const useAuthStore = defineStore('storeAuth', () => {
       $q.notify({
         progress: true,
         message: error.message || 'Error al iniciar sesión',
+        icon: 'warning',
+        color: 'white',
+        textColor: 'negative',
+      })
+    }
+  }
+
+  async function googleLogin(credential) {
+    try {
+      console.log('\n----------> googleLogin')
+
+      const response = await axiosInstance.post(LOGIN_GOOGLE_API_ROUTE, {
+        idToken: credential,
+      })
+
+      const ejec = response.data.ejecucion
+
+      if (ejec.respuesta.estado === 'OK') {
+        const data = ejec.data
+        user.value = data.user
+        roles.value = data.user.rol
+        ejecucion.value = ejec
+
+        setHeader(data.token)
+
+        $q.notify({
+          color: 'positive',
+          message: 'Bienvenido!',
+          icon: 'check',
+          textColor: 'white',
+        })
+      } else {
+        $q.notify({
+          progress: true,
+          message: ejec.respuesta.mensaje,
+          icon: 'warning',
+          color: 'white',
+          textColor: 'negative',
+        })
+      }
+    } catch (error) {
+      $q.notify({
+        progress: true,
+        message: error.message || 'Error al iniciar sesión con Google',
         icon: 'warning',
         color: 'white',
         textColor: 'negative',
@@ -200,6 +245,7 @@ export const useAuthStore = defineStore('storeAuth', () => {
     loggedIn,
     loginCallbacks,
     loginCallback,
+    googleLogin,
     login,
     fetch,
     logout,

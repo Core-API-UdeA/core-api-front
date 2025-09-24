@@ -14,7 +14,7 @@
       </q-card-section>
 
       <q-card-section class="q-gutter-x-md flex flex-center">
-        <div class="border-item">
+        <div class="border-item" @click="googleSignIn">
           <Icon icon="logos:google-icon" width="48" />
         </div>
         <div class="border-item">
@@ -97,7 +97,7 @@
 
 <script setup>
 import { Icon } from '@iconify/vue'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'stores/auth-store'
@@ -109,6 +109,28 @@ const togglePasswordVisibility = ref(false)
 const authStore = useAuthStore()
 const $q = useQuasar()
 const router = useRouter()
+
+onMounted(() => {
+  console.log(process.env.GOOGLE_CLIENT_ID)
+  google.accounts.id.initialize({
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    callback: handleGoogleResponse,
+  })
+})
+
+function googleSignIn() {
+  google.accounts.id.prompt()
+}
+
+
+async function handleGoogleResponse(response) {
+  console.log('Encoded JWT ID token: ' + response.credential)
+  await authStore.googleLogin(response.credential)
+
+  if (authStore.loggedIn) {
+    router.push('/main')
+  }
+}
 
 async function login() {
   try {
@@ -140,8 +162,6 @@ async function login() {
 function resetPassword() {
   console.log('Reset password clicked')
 }
-
-
 </script>
 
 <style lang="scss" scoped>

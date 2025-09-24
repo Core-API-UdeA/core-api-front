@@ -57,8 +57,12 @@ export default defineConfig((ctx) => {
         PREFIX: process.env.PREFIX || '/scapi',
         SECRET_ROUTE_KEY: process.env.SECRET_ROUTE_KEY || 'FraseSecretaEncriptacion',
         LOGIN_ROUTE: '/auth/login',
+        LOGIN_GOOGLE_ROUTE: '/auth/google-login',
         FETCH_ROUTE: '/auth/fetch',
         REGISTER_ROUTE: '/auth/register',
+        GOOGLE_CLIENT_ID:
+          process.env.GOOGLE_CLIENT_ID ||
+          '629633668659-h4373qsgk3rgfjuan1l53mlckqmh9pp3.apps.googleusercontent.com',
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

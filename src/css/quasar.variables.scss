@@ -17,6 +17,7 @@ $secondary: #0A4C52;
 $accent: #222222;
 
 $accentitems: #5E5E5E;
+$accentlight: #C3C1C1;
 
 $bgpage: #121212;
 
@@ -42,4 +43,12 @@ $warning: #053c3f;
 
 .bg-accentitems {
   background-color: $accentitems !important;
+}
+
+.text-accentlight {
+  color: $accentlight !important;
+}
+
+.bg-accentlight {
+  background-color: $accentlight !important;
 }

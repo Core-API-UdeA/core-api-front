@@ -1,36 +1,44 @@
 <template>
-  <q-item clickable tag="a" target="_blank" :href="props.link">
-    <q-item-section v-if="props.icon" avatar>
-      <q-icon :name="props.icon" />
+  <q-item
+    clickable
+    class="q-ma-sm"
+    :to="props.link"
+    :class="isActive ? 'bg-accent' : ''"
+    style="border-radius: 12px"
+  >
+    <q-item-section avatar>
+      <div class="q-pa-sm q-mr-sm">
+        <q-icon :name="props.icon" size="24px" :color="isActive ? 'primary' : 'white'" />
+      </div>
     </q-item-section>
 
     <q-item-section>
-      <q-item-label>{{ props.title }}</q-item-label>
-      <q-item-label caption>{{ props.caption }}</q-item-label>
+      <q-item-label :class="isActive ? 'text-weight-bolder text-accentlight' : 'text-weight-bolder text-accentitems'" >{{ props.title }}</q-item-label>
+      <q-item-label caption :style="isActive ? 'border-bottom: solid #07A6A8; width: 5vmax' : ''" class="text-accentlight">{{
+        props.caption
+      }}</q-item-label>
     </q-item-section>
   </q-item>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+
 const props = defineProps({
-  title: {
-    type: String,
-    required: true,
-  },
+  title: String,
+  caption: String,
+  link: String,
+  icon: String,
+})
 
-  caption: {
-    type: String,
-    default: '',
-  },
+const router = useRouter()
 
-  link: {
-    type: String,
-    default: '#',
-  },
-
-  icon: {
-    type: String,
-    default: '',
+const isActive = computed({
+  get() {
+    return router.currentRoute.value.path.includes(props.link)
   },
 })
 </script>
+
+<style scoped></style>

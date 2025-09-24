@@ -20,6 +20,16 @@ const routes = [
         path: '',
         component: () => import('pages/HomePage.vue'),
       },
+      {
+        path: '/catalogo',
+        component: () => import('pages/CatalogoPage.vue'),
+        meta: { authRequired: true },
+      },
+      {
+        path: '/apis',
+        component: () => import('pages/ApisPage.vue'),
+        meta: { authRequired: true },
+      },
     ],
   },
 

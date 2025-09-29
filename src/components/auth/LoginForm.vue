@@ -52,7 +52,11 @@
           standout="bg-grey-10 text-white"
           label="Password"
           :type="togglePasswordVisibility ? 'text' : 'password'"
-          :rules="[(val) => (val && val.length > 0) || 'Please type a password']"
+          maxlength="40"
+          :rules="[
+            (val) => (val && val.length > 0) || 'Please type a password',
+            (val) => val.length >= 8 || 'Does not meet the number of character allowed',
+          ]"
         >
           <template v-slot:prepend>
             <Icon icon="mdi:key" width="24" class="text-accentitems" />
@@ -121,7 +125,6 @@ onMounted(() => {
 function googleSignIn() {
   google.accounts.id.prompt()
 }
-
 
 async function handleGoogleResponse(response) {
   console.log('Encoded JWT ID token: ' + response.credential)

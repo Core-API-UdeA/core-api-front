@@ -55,7 +55,10 @@
           standout="bg-grey-10 text-white"
           label="Username"
           :rules="[
-            (val) => (val && val.length > 0) || 'Please type a username',
+            (val) => !!val || 'Please type a username',
+            (val) =>
+              (5 <= val.length && val.length <= 60) ||
+              'Does not meet the number of characters allowed',
             (val) => !/\s/.test(val) || 'Username cannot contain spaces',
           ]"
         >
@@ -72,7 +75,14 @@
           standout="bg-grey-10 text-white"
           label="Password"
           :type="togglePasswordVisibility ? 'text' : 'password'"
-          :rules="[(val) => (val && val.length > 0) || 'Please type a password']"
+          maxlength="40"
+          :rules="[
+            (val) => !!val || 'Please type a password',
+            (val) => /[A-Z]/.test(val) || 'Must contain at least one uppercase letter',
+            (val) => /[0-9]/.test(val) || 'Must contain at least one number',
+            (val) => /[^A-Za-z0-9]/.test(val) || 'Must contain at least one special character',
+            (val) => val.length >= 8 || 'Does not meet the number of characters allowed',
+          ]"
         >
           <template v-slot:prepend>
             <Icon icon="mdi:key" width="24" class="text-accentitems" />
@@ -95,8 +105,9 @@
           standout="bg-grey-10 text-white"
           label="Confirm Password"
           :type="togglePasswordVisibility ? 'text' : 'password'"
+          maxlength="40"
           :rules="[
-            (val) => (val && val.length > 0) || 'Please confirm your password',
+            (val) => !!val || 'Please confirm your password',
             (val) => val === password || 'Passwords do not match',
           ]"
         >
@@ -176,7 +187,7 @@ async function handleRegister() {
       color: 'white',
       textColor: 'negative',
       icon: 'warning',
-      message: 'Error '+(err.message || err),
+      message: 'Error ' + (err.message || err),
     })
   } finally {
     $q.loading.hide()

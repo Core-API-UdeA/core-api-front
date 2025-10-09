@@ -12,6 +12,12 @@ const routes = [
   },
 
   {
+    path: '/auth/github/callback',
+    component: () => import('layouts/LoginLayout.vue'),
+    children: [{ path: '', component: () => import('pages/auth/github/Callback.vue') }],
+  },
+
+  {
     path: '/main',
     component: () => import('layouts/HomeLayout.vue'),
     meta: { authRequired: true },

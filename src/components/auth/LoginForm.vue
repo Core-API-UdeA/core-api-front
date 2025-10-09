@@ -17,7 +17,7 @@
         <div class="border-item" @click="googleSignIn">
           <Icon icon="logos:google-icon" width="48" />
         </div>
-        <div class="border-item">
+        <div class="border-item" @click="githubSignIn">
           <Icon icon="simple-icons:github" width="48" color="#000000" />
         </div>
         <div class="border-item">
@@ -132,6 +132,16 @@ onMounted(async () => {
   await nextTick()
   initializeGoogleSignIn()
 })
+
+function githubSignIn() {
+  const clientId = process.env.GITHUB_CLIENT_ID
+  const redirectUri = encodeURIComponent(`${window.location.origin}/auth/github/callback`)
+  const scope = encodeURIComponent('read:user user:email')
+
+  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`
+
+  window.location.href = githubAuthUrl
+}
 
 function initializeGoogleSignIn() {
   if (!window.google || googleInitialized) return

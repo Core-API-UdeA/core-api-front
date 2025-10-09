@@ -5,6 +5,7 @@ import { ref, computed } from 'vue'
 
 const LOGIN_API_ROUTE = process.env.LOGIN_ROUTE
 const LOGIN_GOOGLE_API_ROUTE = process.env.LOGIN_GOOGLE_ROUTE
+const LOGIN_GITHUB_API_ROUTE = process.env.LOGIN_GITHUB_ROUTE
 const FETCH_API_ROUTE = process.env.FETCH_ROUTE
 const REGISTER_API_ROUTE = process.env.REGISTER_ROUTE
 
@@ -150,6 +151,53 @@ export const useAuthStore = defineStore('storeAuth', () => {
     }
   }
 
+  async function githubLogin(code) {
+    try {
+      console.log('\n----------> githubLogin')
+
+      const response = await axiosInstance.post(LOGIN_GITHUB_API_ROUTE, {
+        code,
+      })
+
+      const ejec = response.data.ejecucion
+
+      if (ejec?.respuesta?.estado === 'OK') {
+        const data = ejec.data
+        user.value = data.user
+        roles.value = data.user.rol
+        ejecucion.value = ejec
+
+        setHeader(data.token)
+
+        $q.notify({
+          color: 'positive',
+          message: `Bienvenido ${data.user.username || ''}!`,
+          icon: 'check',
+          textColor: 'white',
+        })
+      } else {
+        $q.notify({
+          progress: true,
+          message: ejec?.respuesta?.mensaje || 'Error en autenticación con GitHub',
+          icon: 'warning',
+          color: 'white',
+          textColor: 'negative',
+        })
+      }
+    } catch (error) {
+      console.error('Error githubLogin:', error)
+
+      $q.notify({
+        progress: true,
+        message:
+          error.response?.data?.mensaje || error.message || 'Error al iniciar sesión con GitHub',
+        icon: 'warning',
+        color: 'white',
+        textColor: 'negative',
+      })
+    }
+  }
+
   async function fetch() {
     try {
       console.log('\n----------> fetch')
@@ -252,5 +300,6 @@ export const useAuthStore = defineStore('storeAuth', () => {
     hasRole,
     setHeader,
     register,
+    githubLogin,
   }
 })

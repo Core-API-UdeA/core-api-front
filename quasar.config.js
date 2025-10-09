@@ -5,9 +5,7 @@ import { defineConfig } from '#q-app/wrappers'
 import { fileURLToPath } from 'node:url'
 import dotenv from 'dotenv'
 import { resolve } from 'path'
-dotenv.config({ path: resolve('./.env.production') })
-
-console.log('BASE_URL_API (desde .env):', process.env.BASE_URL_API)
+dotenv.config({ path: resolve('.env') })
 
 export default defineConfig((ctx) => {
   return {
@@ -58,11 +56,12 @@ export default defineConfig((ctx) => {
         SECRET_ROUTE_KEY: process.env.SECRET_ROUTE_KEY || 'FraseSecretaEncriptacion',
         LOGIN_ROUTE: '/auth/login',
         LOGIN_GOOGLE_ROUTE: '/auth/google-login',
+        LOGIN_GITHUB_ROUTE: '/auth/github-login',
         FETCH_ROUTE: '/auth/fetch',
         REGISTER_ROUTE: '/auth/register',
-        GOOGLE_CLIENT_ID:
-          process.env.GOOGLE_CLIENT_ID ||
-          '629633668659-h4373qsgk3rgfjuan1l53mlckqmh9pp3.apps.googleusercontent.com',
+        GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID || '345344535',
+        GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET || '345344535',
+        GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '345344535',
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

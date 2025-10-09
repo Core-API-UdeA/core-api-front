@@ -6,16 +6,16 @@
         <!-- Vista Login (Login + Transition) -->
         <div class="form-view login-view">
           <div class="form-column">
-            <LoginForm />
+            <LoginForm @toggleForm="toggleForm"/>
           </div>
-          <TransitionForm :isLogin="isLogin" @toggleForm="toggleForm" :visible="isLogin" />
+          <TransitionForm v-if="!$q.platform.is.mobile" :isLogin="isLogin" @toggleForm="toggleForm" :visible="isLogin" />
         </div>
 
         <!-- Vista Register (Transition + Register) -->
         <div class="form-view register-view">
-          <TransitionForm :isLogin="isLogin" @toggleForm="toggleForm" :visible="!isLogin" />
+          <TransitionForm :isLogin="isLogin" @toggleForm="toggleForm" :visible="!isLogin" v-if="!$q.platform.is.mobile"/>
           <div class="form-column">
-            <RegisterForm />
+            <RegisterForm @toggleForm="toggleForm"/>
           </div>
         </div>
       </div>
@@ -126,6 +126,13 @@ function toggleForm() {
 
 // Responsive
 @media (max-width: 768px) {
+  .auth-container {
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  position: relative;
+}
   .form-view {
     flex-direction: column;
   }

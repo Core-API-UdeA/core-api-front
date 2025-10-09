@@ -14,9 +14,13 @@
       </q-card-section>
 
       <q-card-section class="q-gutter-x-md flex flex-center">
-        <div class="border-item">
+        <!-- Google Sign In Button -->
+        <div class="border-item" @click="googleSignIn">
           <Icon icon="logos:google-icon" width="48" />
         </div>
+        <!-- Botón oculto de Google para móviles -->
+        <div id="google-signin-button" style="display: none"></div>
+
         <div class="border-item">
           <Icon icon="simple-icons:github" width="48" color="#000000" />
         </div>
@@ -137,6 +141,16 @@
           :disable="!email || !password || !username || !confirmPassword"
         />
       </q-card-section>
+
+      <q-card-section class="flex flex-center" style="margin: 0" v-if="$q.platform.is.mobile">
+        <span
+          class="text-accentitems cursor-pointer"
+          @click="emit('toggleForm')"
+          style="text-align: center; font-size: 0.8vmax; display: flex; align-items: center"
+        >
+          Already have an account? Sign in to access all our features.
+        </span>
+      </q-card-section>
     </q-form>
   </q-card>
 </template>
@@ -146,7 +160,9 @@ import { useAuthStore } from 'stores/auth-store'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { Icon } from '@iconify/vue'
-import { ref } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
+
+const emit = defineEmits(['toggleForm'])
 
 const email = ref('')
 const password = ref('')
@@ -158,6 +174,116 @@ const authStore = useAuthStore()
 const router = useRouter()
 const $q = useQuasar()
 
+let googleInitialized = false
+
+onMounted(async () => {
+  await nextTick()
+  initializeGoogleSignIn()
+})
+
+function initializeGoogleSignIn() {
+  if (!window.google || googleInitialized) return
+
+  try {
+    // Inicializar Google Identity Services
+    google.accounts.id.initialize({
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      callback: handleGoogleResponse,
+      auto_select: false,
+      cancel_on_tap_outside: true,
+      ux_mode: 'popup',
+      use_fedcm_for_prompt: true,
+    })
+
+    // Si es móvil, renderizar botón invisible y simular click
+    google.accounts.id.renderButton(document.getElementById('google-signin-button'), {
+      theme: 'outline',
+      size: 'large',
+      type: 'standard',
+      width: 250,
+    })
+
+    googleInitialized = true
+  } catch (error) {
+    console.error('Error initializing Google Sign-In:', error)
+  }
+}
+
+function googleSignIn() {
+  if (!window.google) {
+    $q.notify({
+      color: 'negative',
+      textColor: 'white',
+      icon: 'warning',
+      message: 'Google Sign-In no está disponible',
+    })
+    return
+  }
+
+  try {
+    // En móviles, simular click en el botón renderizado
+    const googleButton = document.querySelector('#google-signin-button div[role="button"]')
+    if (googleButton) {
+      googleButton.click()
+    } else {
+      // Fallback: usar prompt con configuración móvil
+      google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed()) {
+          console.log('Prompt no mostrado:', notification.getNotDisplayedReason())
+          // Intentar con redirect como último recurso
+          fallbackToRedirect()
+        }
+      })
+    }
+  } catch (error) {
+    console.error('Error al iniciar Google Sign-In:', error)
+    $q.notify({
+      color: 'negative',
+      textColor: 'white',
+      icon: 'warning',
+      message: 'Error al iniciar sesión con Google',
+    })
+  }
+}
+
+function fallbackToRedirect() {
+  // Método alternativo: usar OAuth2 redirect flow
+  const clientId = process.env.GOOGLE_CLIENT_ID
+  const redirectUri = encodeURIComponent(window.location.origin + '/auth/google/callback')
+  const scope = encodeURIComponent('email profile')
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}`
+
+  window.location.href = authUrl
+}
+
+async function handleGoogleResponse(response) {
+  try {
+    console.log('Google response received')
+
+    $q.loading.show({
+      backgroundColor: '#fff',
+      message: 'Iniciando sesión con Google...',
+      messageColor: 'white',
+    })
+
+    await authStore.googleLogin(response.credential)
+
+    if (authStore.loggedIn) {
+      router.push('/main')
+    }
+  } catch (error) {
+    console.error('Error en handleGoogleResponse:', error)
+    $q.notify({
+      color: 'negative',
+      textColor: 'white',
+      icon: 'warning',
+      message: 'Error al iniciar sesión con Google',
+    })
+  } finally {
+    $q.loading.hide()
+  }
+}
+
 async function handleRegister() {
   try {
     $q.loading.show({
@@ -166,7 +292,6 @@ async function handleRegister() {
       messageColor: 'white',
     })
 
-    // Válido otra vez las contraseñas que coincidan
     if (password.value !== confirmPassword.value) {
       $q.notify({
         color: 'white',
@@ -207,11 +332,25 @@ async function handleRegister() {
   justify-content: center;
   font-size: 2vmax;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .border-item:hover {
   background-color: #181818;
   border: 2px solid white;
   transition: 0.03s;
+}
+
+.border-item:active {
+  transform: scale(0.95);
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .border-item {
+    width: 60px;
+    height: 60px;
+    padding: 8px;
+  }
 }
 </style>

@@ -17,7 +17,7 @@
           métricas en tiempo real y máxima seguridad.
         </span>
       </div>
-      <div class="col flex flex-center">
+      <div class="col flex flex-center" v-if="!$q.platform.is.mobile">
         <q-img
           src="~assets/core-api-isotipo.png"
           style="width: 25vw; height: auto; position: absolute; bottom: 3vmax; right: -6vmax"

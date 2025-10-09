@@ -95,16 +95,28 @@
           :disable="!email || !password"
         />
       </q-card-section>
+
+      <q-card-section class="flex flex-center" style="margin: 0" v-if="$q.platform.is.mobile">
+        <span
+          class="text-accentitems cursor-pointer"
+          @click="emit('toggleForm')"
+          style="text-align: center; font-size: 0.8vmax; display: flex; align-items: center"
+        >
+          Don't have an account? Sign up to access all our features.
+        </span>
+      </q-card-section>
     </q-form>
   </q-card>
 </template>
 
 <script setup>
 import { Icon } from '@iconify/vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, nextTick } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'stores/auth-store'
+
+const emit = defineEmits(['toggleForm'])
 
 const email = ref('')
 const password = ref('')
@@ -114,24 +126,113 @@ const authStore = useAuthStore()
 const $q = useQuasar()
 const router = useRouter()
 
-onMounted(() => {
-  console.log(process.env.GOOGLE_CLIENT_ID)
-  google.accounts.id.initialize({
-    client_id: process.env.GOOGLE_CLIENT_ID,
-    callback: handleGoogleResponse,
-  })
+let googleInitialized = false
+
+onMounted(async () => {
+  await nextTick()
+  initializeGoogleSignIn()
 })
 
+function initializeGoogleSignIn() {
+  if (!window.google || googleInitialized) return
+
+  try {
+    // Inicializar Google Identity Services
+    google.accounts.id.initialize({
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      callback: handleGoogleResponse,
+      auto_select: false,
+      cancel_on_tap_outside: true,
+      ux_mode: 'popup',
+      use_fedcm_for_prompt: true,
+    })
+
+    // Si es móvil, renderizar botón invisible y simular click
+    google.accounts.id.renderButton(document.getElementById('google-signin-button'), {
+      theme: 'outline',
+      size: 'large',
+      type: 'standard',
+      width: 250,
+    })
+
+    googleInitialized = true
+  } catch (error) {
+    console.error('Error initializing Google Sign-In:', error)
+  }
+}
+
 function googleSignIn() {
-  google.accounts.id.prompt()
+  if (!window.google) {
+    $q.notify({
+      color: 'negative',
+      textColor: 'white',
+      icon: 'warning',
+      message: 'Google Sign-In no está disponible',
+    })
+    return
+  }
+
+  try {
+    // En móviles, simular click en el botón renderizado
+    const googleButton = document.querySelector('#google-signin-button div[role="button"]')
+    if (googleButton) {
+      googleButton.click()
+    } else {
+      // Fallback: usar prompt con configuración móvil
+      google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed()) {
+          console.log('Prompt no mostrado:', notification.getNotDisplayedReason())
+          // Intentar con redirect como último recurso
+          fallbackToRedirect()
+        }
+      })
+    }
+  } catch (error) {
+    console.error('Error al iniciar Google Sign-In:', error)
+    $q.notify({
+      color: 'negative',
+      textColor: 'white',
+      icon: 'warning',
+      message: 'Error al iniciar sesión con Google',
+    })
+  }
+}
+
+function fallbackToRedirect() {
+  // Método alternativo: usar OAuth2 redirect flow
+  const clientId = process.env.GOOGLE_CLIENT_ID
+  const redirectUri = encodeURIComponent(window.location.origin + '/auth/google/callback')
+  const scope = encodeURIComponent('email profile')
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}`
+
+  window.location.href = authUrl
 }
 
 async function handleGoogleResponse(response) {
-  console.log('Encoded JWT ID token: ' + response.credential)
-  await authStore.googleLogin(response.credential)
+  try {
+    console.log('Google response received')
 
-  if (authStore.loggedIn) {
-    router.push('/main')
+    $q.loading.show({
+      backgroundColor: '#fff',
+      message: 'Iniciando sesión con Google...',
+      messageColor: 'white',
+    })
+
+    await authStore.googleLogin(response.credential)
+
+    if (authStore.loggedIn) {
+      router.push('/main')
+    }
+  } catch (error) {
+    console.error('Error en handleGoogleResponse:', error)
+    $q.notify({
+      color: 'negative',
+      textColor: 'white',
+      icon: 'warning',
+      message: 'Error al iniciar sesión con Google',
+    })
+  } finally {
+    $q.loading.hide()
   }
 }
 

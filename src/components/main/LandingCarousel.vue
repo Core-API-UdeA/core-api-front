@@ -1,10 +1,10 @@
 <template>
   <div class="cards-container">
-    <div class="row q-gutter-x-md animated-row" style="margin: 0; padding: 0">
+    <div class="row animated-row q-gutter-x-md q-gutter-y-md flex flex-center">
       <div
         v-for="(item, index) in items"
         :key="item.name"
-        class="col animated-card"
+        class="col-lg col-xs-12 animated-card"
         :class="[item.color, `card-${index + 1}`]"
         :style="{
           '--delay': `${index * 0.1}s`,
@@ -98,9 +98,10 @@ function handleLeave(index) {
 }
 
 .animated-card {
+  max-width: 95vw;
   position: relative;
   border-radius: 15px !important;
-  min-height: 8vh;
+  min-height: 11vh;
   display: flex;
   align-items: center;
   overflow: hidden;

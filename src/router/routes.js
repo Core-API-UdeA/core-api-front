@@ -12,6 +12,20 @@ const routes = [
   },
 
   {
+    path: '/confirmation',
+    component: () => import('layouts/LoginLayout.vue'),
+    children: [{ path: '', component: () => import('pages/auth/ConfirmationPage.vue') }],
+  },
+
+  {
+    path: '/confirmation/:emailConfirmationToken',
+    component: () => import('layouts/LoginLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/auth/EmailConfirmationToken.vue'), props: true },
+    ],
+  },
+
+  {
     path: '/auth/github/callback',
     component: () => import('layouts/LoginLayout.vue'),
     children: [{ path: '', component: () => import('pages/auth/github/Callback.vue') }],

@@ -312,11 +312,13 @@ async function handleRegister() {
       return
     }
 
-    await authStore.register(email.value, username.value, password.value)
-
-    if (authStore.loggedIn) {
-      router.push('/main')
+    try {
+      await authStore.register(email.value, username.value, password.value)
+      router.push('/confirmation')
+    } catch (error) {
+      throw new Error(error.response?.data?.ejecucion?.respuesta?.mensaje || 'Registration failed')
     }
+
   } catch (err) {
     $q.notify({
       color: 'white',

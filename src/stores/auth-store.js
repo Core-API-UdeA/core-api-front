@@ -8,6 +8,7 @@ const LOGIN_GOOGLE_API_ROUTE = process.env.LOGIN_GOOGLE_ROUTE
 const LOGIN_GITHUB_API_ROUTE = process.env.LOGIN_GITHUB_ROUTE
 const FETCH_API_ROUTE = process.env.FETCH_ROUTE
 const REGISTER_API_ROUTE = process.env.REGISTER_ROUTE
+const CONFIRMATION_API_ROUTE = process.env.CONFIRMATION_ROUTE
 
 export const useAuthStore = defineStore('storeAuth', () => {
   const $q = useQuasar()
@@ -214,6 +215,8 @@ export const useAuthStore = defineStore('storeAuth', () => {
         user.value = data.user
         roles.value = data.user.rol
 
+        setHeader(data.token)
+
         ejecucion.value = ejec
         loginCallback()
       } else {
@@ -251,16 +254,9 @@ export const useAuthStore = defineStore('storeAuth', () => {
       const ejec = response.data.ejecucion
 
       if (ejec.respuesta.estado === 'OK') {
-        const data = ejec.data
-        user.value = data.user
-        roles.value = data.user.rol
-        ejecucion.value = ejec
-
-        setHeader(data.token)
-
         $q.notify({
           color: 'positive',
-          message: 'Registro exitoso, bienvenido!',
+          message: ejec.respuesta.mensaje,
           icon: 'check',
           textColor: 'white',
         })
@@ -272,6 +268,7 @@ export const useAuthStore = defineStore('storeAuth', () => {
           color: 'white',
           textColor: 'negative',
         })
+        throw new Error(ejec.respuesta.mensaje)
       }
     } catch (error) {
       $q.notify({
@@ -281,6 +278,52 @@ export const useAuthStore = defineStore('storeAuth', () => {
         color: 'white',
         textColor: 'negative',
       })
+      throw error
+    }
+  }
+
+  async function confirmarUsuario(emailConfirmationToken) {
+    try {
+      console.log('\n----------> confirmarUsuario')
+
+      const response = await axiosInstance.post(CONFIRMATION_API_ROUTE, {
+        emailConfirmationToken,
+      })
+      const ejec = response.data.ejecucion
+
+      if (ejec.respuesta.estado === 'OK') {
+        const data = ejec.data
+        user.value = data.user
+        roles.value = data.user.rol
+        ejecucion.value = ejec
+
+        setHeader(data.token)
+
+        $q.notify({
+          color: 'positive',
+          message: 'Bienvenido!',
+          icon: 'check',
+          textColor: 'white',
+        })
+      } else {
+        $q.notify({
+          progress: true,
+          message: ejec.respuesta.mensaje,
+          icon: 'warning',
+          color: 'white',
+          textColor: 'negative',
+        })
+        throw new Error(ejec.respuesta.mensaje)
+      }
+    } catch (error) {
+      $q.notify({
+        progress: true,
+        message: error.message || 'Error al confirmar el usuario',
+        icon: 'warning',
+        color: 'white',
+        textColor: 'negative',
+      })
+      throw error
     }
   }
 
@@ -293,6 +336,7 @@ export const useAuthStore = defineStore('storeAuth', () => {
     loggedIn,
     loginCallbacks,
     loginCallback,
+    confirmarUsuario,
     googleLogin,
     login,
     fetch,

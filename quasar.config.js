@@ -60,6 +60,7 @@ export default defineConfig((ctx) => {
         LOGIN_GITHUB_ROUTE: '/auth/github-login',
         FETCH_ROUTE: '/auth/fetch',
         REGISTER_ROUTE: '/auth/register',
+        CONFIRMATION_ROUTE: '/auth/confirmation',
         GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID || '345344535',
         GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET || '345344535',
         GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '345344535',

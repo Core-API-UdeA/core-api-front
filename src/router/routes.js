@@ -49,14 +49,20 @@ const routes = [
         component: () => import('pages/HomePage.vue'),
       },
       {
-        path: '/catalogo',
+        path: 'catalogo',
         component: () => import('pages/CatalogoPage.vue'),
         meta: { authRequired: true },
       },
       {
-        path: '/apis',
+        path: 'apis',
         component: () => import('pages/ApisPage.vue'),
         meta: { authRequired: true },
+      },
+      {
+        path: 'detalle-api/:id',
+        name: '/detalle-api',
+        component: () => import('pages/gestion-apis/DetalleApi.vue'),
+        props: true,
       },
     ],
   },

@@ -150,7 +150,7 @@ function normalize(name) {
 
 function verDetalle(id) {
   const idEncoded = window.btoa(id)
-  router.push('/detalle-api/' + idEncoded)
+  router.replace('detalle-api/' + idEncoded)
 }
 </script>
 

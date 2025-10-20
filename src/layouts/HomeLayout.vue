@@ -158,13 +158,13 @@ const links = [
   {
     title: 'APIs',
     caption: 'Manage your APIs',
-    link: '/apis',
+    link: '/main/apis',
     icon: 'api',
   },
   {
     title: 'Catalogo',
     caption: 'Browse our catalog',
-    link: '/catalogo',
+    link: '/main/catalogo',
     icon: 'fas fa-bag-shopping',
   },
 ]

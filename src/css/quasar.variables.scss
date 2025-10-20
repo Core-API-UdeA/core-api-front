@@ -14,6 +14,7 @@
 
 $primary: #07A6A8;
 $secondary: #0A4C52;
+$third: #539494;
 $accent: #222222;
 
 $accentitems: #5E5E5E;
@@ -51,4 +52,12 @@ $warning: #053c3f;
 
 .bg-accentlight {
   background-color: $accentlight !important;
+}
+
+.text-third {
+  color: $third !important;
+}
+
+.bg-third {
+  background-color: $third !important;
 }

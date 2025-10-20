@@ -8,17 +8,7 @@
     </div>
 
     <div class="row q-col-gutter-sm">
-      <CardApi
-      class="col-md-3"
-        :title="'Titulo del API - Nombre'"
-        :type="'Tipo'"
-        :price="2.15"
-        :owner="'Juan.Lema'"
-        :createdAt="'2025/08/25'"
-        :caption="'subtitulo descriptivo del api expuesta en este punto'"
-        v-for="value in 4"
-        :key="value"
-      />
+      <ListaApis />
     </div>
   </q-page>
 </template>
@@ -30,5 +20,5 @@ const HeroSection = defineAsyncComponent(() => import('src/components/main/HeroS
 const LandingCarousel = defineAsyncComponent(
   () => import('src/components/main/LandingCarousel.vue'),
 )
-const CardApi = defineAsyncComponent(() => import('src/components/apis/CardApi.vue'))
+const ListaApis = defineAsyncComponent(() => import('src/components/catalogo/ListaApis.vue'))
 </script>

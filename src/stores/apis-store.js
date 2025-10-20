@@ -2,7 +2,9 @@ import { defineStore } from 'pinia'
 import { axiosInstance } from 'boot/axios'
 import { ref } from 'vue'
 
-const RUTA_APIS = ''
+const RUTA_APIS = '/catalogo/listarapis'
+const RUTA_API_OVERVIEW = '/catalogo/obteneroverview'
+const RUTA_API_DOCUMENTATION = '/catalogo/obtenerdocumentacion'
 
 export const useApisStore = defineStore('storeApi', () => {
   const filter = ref({
@@ -68,9 +70,76 @@ export const useApisStore = defineStore('storeApi', () => {
     }
   }
 
+  async function consultarApiOverview(id) {
+    const params = {
+      apiId: id,
+    }
+    try {
+      const response = await axiosInstance.get(RUTA_API_OVERVIEW, { params })
+      const ejec = response.data.ejecucion
+      if (ejec.respuesta.estado === 'OK') {
+        return ejec.data
+      } else {
+        throw new Error(ejec.respuesta.mensaje)
+      }
+    } catch (error) {
+      console.error('Error en consultarApiOverview:', error)
+      throw error
+    }
+  }
+
+  async function consultarApiDocumentation(id) {
+    const params = {
+      apiId: id,
+    }
+    try {
+      const response = await axiosInstance.get(RUTA_API_DOCUMENTATION, { params })
+      const ejec = response.data.ejecucion
+      if (ejec.respuesta.estado === 'OK') {
+        return ejec.data
+      } else {
+        throw new Error(ejec.respuesta.mensaje)
+      }
+    } catch (error) {
+      console.error('Error en consultarApiDocumentation:', error)
+      throw error
+    }
+  }
+
+  function resetStore() {
+    filter.value = {
+      estado: '',
+      asunto: '',
+      fechaPeticionInicial: '',
+      fechaPeticionFinal: '',
+    }
+    paginationOriginal.value = {
+      sortBy: 'created_at',
+      descending: false,
+      page: 1,
+      rowsPerPage: 30,
+      rowsNumber: 0,
+      limite: 30,
+    }
+    pagination.value = {
+      sortBy: 'created_at',
+      descending: false,
+      page: 1,
+      rowsPerPage: 30,
+      rowsNumber: 0,
+      limite: 30,
+    }
+    records.value = {
+      data: [],
+    }
+  }
+
   return {
+    consultarApiDocumentation,
+    consultarApiOverview,
     paginationOriginal,
     cargarApis,
+    resetStore,
     pagination,
     records,
     filter,

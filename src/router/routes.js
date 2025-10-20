@@ -2,7 +2,15 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') },
+      {
+        path: 'detalle-api/:id',
+        name: '/detalle-api',
+        component: () => import('pages/gestion-apis/DetalleApi.vue'),
+        props: true,
+      },
+    ],
   },
 
   {

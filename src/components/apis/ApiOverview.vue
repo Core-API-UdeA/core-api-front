@@ -63,7 +63,7 @@
         flat
         color="white"
         label="volver atras"
-        @click="$router.go(-1)"
+        @click="authStore.loggedIn ? $router.push('/main/catalogo') : $router.push('/')"
         icon="arrow_back"
       />
     </div>
@@ -174,6 +174,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useQuasar } from 'quasar'
 import { useApisStore } from 'stores/apis-store.js'
+import { useAuthStore } from 'stores/auth-store.js'
 import { marked } from 'marked'
 
 const props = defineProps({
@@ -184,6 +185,7 @@ const props = defineProps({
 })
 
 const apisStore = useApisStore()
+const authStore = useAuthStore()
 const $q = useQuasar()
 
 const apiOverview = ref(null)

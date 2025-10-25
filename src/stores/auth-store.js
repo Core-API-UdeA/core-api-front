@@ -27,7 +27,11 @@ export const useAuthStore = defineStore('storeAuth', () => {
   function setHeader(tokenStr) {
     console.log('\n----------> setHeader')
     axiosInstance.defaults.headers.common.Authorization = 'Bearer ' + tokenStr
-    Cookies.set('token', tokenStr)
+    Cookies.set('token', tokenStr, {
+      sameSite: 'None',
+      secure: true,
+      path: '/',
+    })
     token.value = tokenStr
   }
 
@@ -80,7 +84,7 @@ export const useAuthStore = defineStore('storeAuth', () => {
         roles.value = data.user.rol
         ejecucion.value = ejec
 
-        setHeader(data.token)
+        await setHeader(data.token)
 
         $q.notify({
           color: 'positive',
@@ -124,7 +128,7 @@ export const useAuthStore = defineStore('storeAuth', () => {
         roles.value = data.user.rol
         ejecucion.value = ejec
 
-        setHeader(data.token)
+        await setHeader(data.token)
 
         $q.notify({
           color: 'positive',
@@ -168,7 +172,7 @@ export const useAuthStore = defineStore('storeAuth', () => {
         roles.value = data.user.rol
         ejecucion.value = ejec
 
-        setHeader(data.token)
+        await setHeader(data.token)
 
         $q.notify({
           color: 'positive',
@@ -215,7 +219,7 @@ export const useAuthStore = defineStore('storeAuth', () => {
         user.value = data.user
         roles.value = data.user.rol
 
-        setHeader(data.token)
+        await setHeader(data.token)
 
         ejecucion.value = ejec
         loginCallback()
@@ -297,7 +301,7 @@ export const useAuthStore = defineStore('storeAuth', () => {
         roles.value = data.user.rol
         ejecucion.value = ejec
 
-        setHeader(data.token)
+        await setHeader(data.token)
 
         $q.notify({
           color: 'positive',

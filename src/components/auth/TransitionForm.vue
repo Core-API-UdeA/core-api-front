@@ -41,7 +41,7 @@
             flat
             color="white"
             label="volver atras"
-            @click="$router.go(-1)"
+            @click="$router.push('/')"
             icon="arrow_back"
           />
         </div>

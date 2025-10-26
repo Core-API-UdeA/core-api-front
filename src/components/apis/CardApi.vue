@@ -4,13 +4,10 @@
       flat
       class="bg-accent row justify-between api-card"
       style="border-radius: 15px; max-width: 460px; min-width: 400px"
-      @click="verDetalle(id)"
     >
       <q-card-section class="col-2 justify-content-center">
         <q-badge unelevated color="white" style="border-radius: 8px">
-          <span class="text-accentitems q-px-sm q-py-xs" style="font-size: 1vmax">{{
-            type
-          }}</span>
+          <span class="text-accentitems q-px-sm q-py-xs" style="font-size: 1vmax">{{ type }}</span>
         </q-badge>
         <div
           class="flex flex-center bg-white q-mt-sm avatar-circle"
@@ -23,9 +20,15 @@
       </q-card-section>
       <q-card-section class="col-10">
         <div class="row justify-end">
-          <q-icon name="eva-heart-outline" color="accentitems" size="md" class="heart-icon" />
+          <q-icon
+            :name="isFavorite ? 'eva-heart' : 'eva-heart-outline'"
+            :color="isFavorite ? 'red' : 'accentitems'"
+            size="md"
+            class="heart-icon cursor-pointer"
+            @click="markAsFavorite"
+          />
         </div>
-        <div class="q-my-md">
+        <div class="q-my-md cursor-pointer" @click="verDetalle(id)">
           <span class="text-h6 text-white">
             {{ title }}
           </span>
@@ -70,8 +73,35 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { useApisStore } from 'stores/apis-store'
+import { useAuthStore } from 'stores/auth-store'
+import { useQuasar } from 'quasar'
+import { onMounted, ref } from 'vue'
 
 const router = useRouter()
+const apisStore = useApisStore()
+const authStore = useAuthStore()
+
+const $q = useQuasar()
+
+const isFavorite = ref(false)
+
+onMounted(async () => {
+  try {
+    if (authStore.loggedIn) {
+      isFavorite.value = await apisStore.consultarUserInteraction(props.id)
+      isFavorite.value = isFavorite.value.favorite
+    }
+  } catch (error) {
+    $q.notify({
+      color: 'negative',
+      textColor: 'white',
+      icon: 'warning',
+      message: 'Error al verificar favorito: ' + error.message,
+    })
+    console.error('Error al verificar favorito:', error)
+  }
+})
 
 const props = defineProps({
   id: String,
@@ -152,11 +182,37 @@ function verDetalle(id) {
   const idEncoded = window.btoa(id)
   router.replace('detalle-api/' + idEncoded)
 }
+
+async function markAsFavorite() {
+  try {
+    if (!authStore.loggedIn) {
+      $q.notify({
+        color: 'negative',
+        textColor: 'white',
+        icon: 'warning',
+        message: 'Debes iniciar sesión para marcar como favorito',
+      })
+      return
+    }
+    await apisStore.actualizarFavorito(props.id)
+
+    await apisStore.consultarUserInteraction(props.id).then((res) => {
+      isFavorite.value = res.favorite
+    })
+  } catch (error) {
+    $q.notify({
+      color: 'negative',
+      textColor: 'white',
+      icon: 'warning',
+      message: 'Error al marcar como favorito: ' + error.message,
+    })
+    console.error('Error al marcar como favorito:', error)
+  }
+}
 </script>
 
 <style lang="scss" scoped>
 .api-card {
-  cursor: pointer;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   overflow: hidden;
@@ -180,7 +236,6 @@ function verDetalle(id) {
   }
 
   &:hover {
-    transform: translateY(-8px);
     box-shadow:
       0 20px 40px rgba(0, 168, 168, 0.15),
       0 0 30px rgba(0, 168, 168, 0.1),

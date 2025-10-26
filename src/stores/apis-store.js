@@ -5,6 +5,9 @@ import { ref } from 'vue'
 const RUTA_APIS = '/catalogo/listarapis'
 const RUTA_API_OVERVIEW = '/catalogo/obteneroverview'
 const RUTA_API_DOCUMENTATION = '/catalogo/obtenerdocumentacion'
+const RUTA_ACTUALIZAR_RATING = '/catalogo/rating'
+const RUTA_ACTUALIZAR_FAVORITO = '/catalogo/favorite'
+const RUTA_OBTENER_USER_INTERACTION = '/catalogo/obteneruserinteraction'
 
 export const useApisStore = defineStore('storeApi', () => {
   const filter = ref({
@@ -15,7 +18,7 @@ export const useApisStore = defineStore('storeApi', () => {
   })
 
   const paginationOriginal = ref({
-    sortBy: 'created_at',
+    sortBy: 'title',
     descending: false,
     page: 1,
     rowsPerPage: 30,
@@ -24,7 +27,7 @@ export const useApisStore = defineStore('storeApi', () => {
   })
 
   const pagination = ref({
-    sortBy: 'created_at',
+    sortBy: 'title',
     descending: false,
     page: 1,
     rowsPerPage: 30,
@@ -88,6 +91,24 @@ export const useApisStore = defineStore('storeApi', () => {
     }
   }
 
+  async function consultarUserInteraction(id) {
+    const params = {
+      apiId: id,
+    }
+    try {
+      const response = await axiosInstance.get(RUTA_OBTENER_USER_INTERACTION, { params })
+      const ejec = response.data.ejecucion
+      if (ejec.respuesta.estado === 'OK') {
+        return ejec.data
+      } else {
+        throw new Error(ejec.respuesta.mensaje)
+      }
+    } catch (error) {
+      console.error('Error en consultarUserInteraction:', error)
+      throw error
+    }
+  }
+
   async function consultarApiDocumentation(id) {
     const params = {
       apiId: id,
@@ -106,6 +127,41 @@ export const useApisStore = defineStore('storeApi', () => {
     }
   }
 
+  async function actualizarRating(apiId, rating) {
+    const params = {
+      apiId: apiId,
+      rating: rating,
+    }
+    try {
+      const response = await axiosInstance.put(RUTA_ACTUALIZAR_RATING, params)
+      const ejec = response.data.ejecucion
+      if (ejec.respuesta.estado === 'OK') {
+        return ejec.data
+      } else {
+        throw new Error(ejec.respuesta.mensaje)
+      }
+    } catch (error) {
+      console.log('Error en el proceso:', error.message)
+    }
+  }
+
+  async function actualizarFavorito(apiId) {
+    const params = {
+      apiId: apiId,
+    }
+    try {
+      const response = await axiosInstance.put(RUTA_ACTUALIZAR_FAVORITO, params)
+      const ejec = response.data.ejecucion
+      if (ejec.respuesta.estado === 'OK') {
+        return ejec.data
+      } else {
+        throw new Error(ejec.respuesta.mensaje)
+      }
+    } catch (error) {
+      console.log('Error en el proceso:', error.message)
+    }
+  }
+
   function resetStore() {
     filter.value = {
       estado: '',
@@ -114,7 +170,7 @@ export const useApisStore = defineStore('storeApi', () => {
       fechaPeticionFinal: '',
     }
     paginationOriginal.value = {
-      sortBy: 'created_at',
+      sortBy: 'title',
       descending: false,
       page: 1,
       rowsPerPage: 30,
@@ -122,7 +178,7 @@ export const useApisStore = defineStore('storeApi', () => {
       limite: 30,
     }
     pagination.value = {
-      sortBy: 'created_at',
+      sortBy: 'title',
       descending: false,
       page: 1,
       rowsPerPage: 30,
@@ -138,6 +194,9 @@ export const useApisStore = defineStore('storeApi', () => {
     consultarApiDocumentation,
     consultarApiOverview,
     paginationOriginal,
+    actualizarFavorito,
+    consultarUserInteraction,
+    actualizarRating,
     cargarApis,
     resetStore,
     pagination,

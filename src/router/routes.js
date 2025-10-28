@@ -67,6 +67,25 @@ const routes = [
     ],
   },
 
+  // footer routes
+  {
+    path: '/terminos',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/TerminosPage.vue') }],
+  },
+
+  {
+    path: '/quienes-somos',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/QuienesSomosPage.vue') }],
+  },
+
+  {
+    path: '/contacto',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/ContactoPage.vue') }],
+  },
+
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue'),

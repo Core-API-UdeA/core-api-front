@@ -27,7 +27,13 @@
         </q-badge>
 
         <!-- Corazón -->
-        <q-icon name="eva-heart-outline" color="accentitems" size="md" class="heart-icon" />
+        <q-icon
+          :name="isFavorite ? 'eva-heart' : 'eva-heart-outline'"
+          :color="isFavorite ? 'red' : 'accentitems'"
+          size="md"
+          class="heart-icon cursor-pointer"
+          @click="markAsFavorite"
+        />
 
         <!-- Precio -->
         <q-badge unelevated color="primary" style="border-radius: 8px">
@@ -35,24 +41,41 @@
           <span class="text-white q-py-xs" style="font-size: 1vmax">{{ api.price }}</span>
         </q-badge>
 
-        <!-- Rating -->
-        <div class="row items-center q-gutter-xs">
+        <!-- Rating Interactivo -->
+        <div class="row items-center q-gutter-xs rating-container">
           <q-icon
-            v-for="n in stars.full"
-            :key="'full-' + n"
-            name="star"
-            color="yellow-7"
+            v-for="n in 5"
+            :key="'star-' + n"
+            :name="getStarIcon(n)"
+            :color="getStarColor(n)"
             size="sm"
+            class="rating-star"
+            :class="{ 'interactive-star': !alreadyRated, 'rated-star': alreadyRated }"
+            @click="!alreadyRated && rateApi(n)"
+            @mouseenter="!alreadyRated && (hoverRating = n)"
+            @mouseleave="!alreadyRated && (hoverRating = 0)"
           />
-          <q-icon v-if="stars.half" name="star_half" color="yellow-7" size="sm" />
-          <q-icon
-            v-for="n in stars.empty"
-            :key="'empty-' + n"
-            name="star_outline"
-            color="grey-5"
-            size="sm"
-          />
-          <span class="text-white text-caption q-ml-xs"> ({{ api.rating_average }}) </span>
+          <span class="text-white text-caption q-ml-xs">
+            ({{ api.rating_average }})
+          </span>
+
+          <!-- Tooltip informativo -->
+          <q-tooltip
+            v-if="!alreadyRated"
+            class="bg-primary text-white"
+            anchor="bottom middle"
+            self="top middle"
+          >
+            {{ hoverRating > 0 ? `Calificar con ${hoverRating} estrella${hoverRating !== 1 ? 's' : ''}` : 'Haz clic para calificar' }}
+          </q-tooltip>
+          <q-tooltip
+            v-else
+            class="bg-grey-8 text-white"
+            anchor="bottom middle"
+            self="top middle"
+          >
+            Ya has calificado con {{ userRating }} estrella{{ userRating !== 1 ? 's' : '' }}
+          </q-tooltip>
         </div>
       </div>
 
@@ -63,7 +86,7 @@
         flat
         color="white"
         label="volver atras"
-        @click="$router.go(-1)"
+        @click="authStore.loggedIn ? $router.push('/main/catalogo') : $router.push('/')"
         icon="arrow_back"
       />
     </div>
@@ -174,6 +197,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useQuasar } from 'quasar'
 import { useApisStore } from 'stores/apis-store.js'
+import { useAuthStore } from 'stores/auth-store.js'
 import { marked } from 'marked'
 
 const props = defineProps({
@@ -184,16 +208,28 @@ const props = defineProps({
 })
 
 const apisStore = useApisStore()
+const authStore = useAuthStore()
 const $q = useQuasar()
 
 const apiOverview = ref(null)
 const apiCargada = ref(false)
+const isFavorite = ref(false)
+const alreadyRated = ref(false)
+const userRating = ref(0)
+const hoverRating = ref(0)
 
 onMounted(async () => {
   try {
     $q.loading.show()
     apiOverview.value = await apisStore.consultarApiOverview(props.apiId)
     apiCargada.value = true
+
+    if (authStore.loggedIn) {
+      const interaction = await apisStore.consultarUserInteraction(props.apiId)
+      isFavorite.value = interaction.favorite
+      alreadyRated.value = interaction.alreadyRated
+      userRating.value = interaction.alreadyRated || 0
+    }
   } catch (error) {
     console.error('Error fetching API overview:', error)
     $q.notify({
@@ -212,18 +248,54 @@ function getInitials(cadena) {
   return cadena.slice(0, 2).toUpperCase()
 }
 
-function getStars(rating, maxStars = 5) {
+function getStarIcon(position) {
+  const rating = api.value.rating_average || 0
+
+  // Si ya calificó, mostrar su calificación
+  if (alreadyRated.value) {
+    return position <= userRating.value ? 'star' : 'star_outline'
+  }
+
+  // Si está haciendo hover, mostrar preview
+  if (hoverRating.value > 0) {
+    return position <= hoverRating.value ? 'star' : 'star_outline'
+  }
+
+  // Mostrar el rating promedio
   const fullStars = Math.floor(rating)
   const hasHalfStar = rating - fullStars >= 0.25 && rating - fullStars < 0.75
-  const emptyStars = maxStars - fullStars - (hasHalfStar ? 1 : 0)
-  return {
-    full: fullStars,
-    half: hasHalfStar ? 1 : 0,
-    empty: emptyStars,
+
+  if (position <= fullStars) {
+    return 'star'
+  } else if (position === fullStars + 1 && hasHalfStar) {
+    return 'star_half'
+  } else {
+    return 'star_outline'
   }
 }
 
-const stars = computed(() => getStars(Number(api.value.rating_average)))
+function getStarColor(position) {
+  // Si ya calificó, mostrar en amarillo su calificación
+  if (alreadyRated.value) {
+    return position <= userRating.value ? 'yellow-7' : 'grey-5'
+  }
+
+  // Si está haciendo hover, mostrar preview en amarillo
+  if (hoverRating.value > 0) {
+    return position <= hoverRating.value ? 'yellow-7' : 'grey-5'
+  }
+
+  // Mostrar el rating promedio
+  const rating = api.value.rating_average || 0
+  const fullStars = Math.floor(rating)
+  const hasHalfStar = rating - fullStars >= 0.25 && rating - fullStars < 0.75
+
+  if (position <= fullStars || (position === fullStars + 1 && hasHalfStar)) {
+    return 'yellow-7'
+  } else {
+    return 'grey-5'
+  }
+}
 
 const parsedStack = computed(() =>
   api.value.technology_stack ? api.value.technology_stack.split(',').map((t) => t.trim()) : [],
@@ -279,6 +351,73 @@ const techIcons = {
 function getTechIcon(tech) {
   return techIcons[tech] || 'fas fa-code'
 }
+
+async function markAsFavorite() {
+  try {
+    if (!authStore.loggedIn) {
+      $q.notify({
+        color: 'negative',
+        textColor: 'white',
+        icon: 'warning',
+        message: 'Debes iniciar sesión para marcar como favorito',
+      })
+      return
+    }
+    await apisStore.actualizarFavorito(props.apiId)
+
+    const interaction = await apisStore.consultarUserInteraction(props.apiId)
+    isFavorite.value = interaction.favorite
+  } catch (error) {
+    $q.notify({
+      color: 'negative',
+      textColor: 'white',
+      icon: 'warning',
+      message: 'Error al marcar como favorito: ' + error.message,
+    })
+    console.error('Error al marcar como favorito:', error)
+  }
+}
+
+async function rateApi(rating) {
+  try {
+    if (!authStore.loggedIn) {
+      $q.notify({
+        color: 'negative',
+        textColor: 'white',
+        icon: 'warning',
+        message: 'Debes iniciar sesión para calificar',
+      })
+      return
+    }
+
+    $q.loading.show()
+    await apisStore.actualizarRating(props.apiId, rating)
+
+    const interaction = await apisStore.consultarUserInteraction(props.apiId)
+    alreadyRated.value = interaction.alreadyRated
+    userRating.value = rating
+
+    // Actualizar el rating promedio de la API
+    apiOverview.value = await apisStore.consultarApiOverview(props.apiId)
+
+    $q.notify({
+      color: 'positive',
+      textColor: 'white',
+      icon: 'star',
+      message: `Has calificado esta API con ${rating} estrella${rating !== 1 ? 's' : ''}`,
+    })
+  } catch (error) {
+    $q.notify({
+      color: 'negative',
+      textColor: 'white',
+      icon: 'warning',
+      message: 'Error al calificar: ' + error.message,
+    })
+    console.error('Error al calificar:', error)
+  } finally {
+    $q.loading.hide()
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -292,6 +431,33 @@ function getTechIcon(tech) {
 
   &:hover {
     transform: scale(1.15);
+  }
+}
+
+// Rating Stars Styles
+.rating-container {
+  position: relative;
+}
+
+.rating-star {
+  transition: all 0.2s ease;
+
+  &.interactive-star {
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.3);
+      filter: drop-shadow(0 0 6px rgba(255, 193, 7, 0.8));
+    }
+
+    &:active {
+      transform: scale(1.15);
+    }
+  }
+
+  &.rated-star {
+    cursor: help;
+    opacity: 0.9;
   }
 }
 

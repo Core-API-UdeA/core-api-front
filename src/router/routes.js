@@ -6,7 +6,6 @@ const routes = [
       { path: '', component: () => import('pages/IndexPage.vue') },
       {
         path: 'detalle-api/:id',
-        name: '/detalle-api',
         component: () => import('pages/gestion-apis/DetalleApi.vue'),
         props: true,
       },
@@ -60,7 +59,6 @@ const routes = [
       },
       {
         path: 'detalle-api/:id',
-        name: '/detalle-api',
         component: () => import('pages/gestion-apis/DetalleApi.vue'),
         props: true,
       },

@@ -1,74 +1,72 @@
 <template>
-  <div class="q-py-md">
-    <q-card
-      flat
-      class="bg-accent row justify-between api-card"
-      style="border-radius: 15px; max-width: 460px; min-width: 400px"
-    >
-      <q-card-section class="col-2 justify-content-center">
-        <q-badge unelevated color="white" style="border-radius: 8px">
-          <span class="text-accentitems q-px-sm q-py-xs" style="font-size: 1vmax">{{ type }}</span>
+  <q-card
+    flat
+    class="bg-accent row justify-between api-card"
+    style="border-radius: 15px; min-width: 400px"
+  >
+    <q-card-section class="col-2 justify-content-center">
+      <q-badge unelevated color="white" style="border-radius: 8px">
+        <span class="text-accentitems q-px-sm q-py-xs" style="font-size: 1vmax">{{ type }}</span>
+      </q-badge>
+      <div
+        class="flex flex-center bg-white q-mt-sm avatar-circle"
+        style="border-radius: 50px; width: 40px; height: 40px; border: solid 3px black"
+      >
+        <span class="text-weight-bolder">
+          {{ getInitials(owner) }}
+        </span>
+      </div>
+    </q-card-section>
+    <q-card-section class="col-10">
+      <div class="row justify-end">
+        <q-icon
+          :name="isFavorite ? 'eva-heart' : 'eva-heart-outline'"
+          :color="isFavorite ? 'red' : 'accentitems'"
+          size="md"
+          class="heart-icon cursor-pointer"
+          @click="markAsFavorite"
+        />
+      </div>
+      <div class="q-my-md cursor-pointer" @click="verDetalle(id)">
+        <span class="text-h6 text-white">
+          {{ title.length > 80 ? title.substring(0, 80) + '...' : title }}
+        </span>
+        <span class="text-subtitle1 text-weight-thin text-accentitems row">
+          {{ caption.length > 80 ? caption.substring(0, 80) + '...' : caption }}
+        </span>
+      </div>
+
+      <div class="row justify-between">
+        <span class="text-subtitle1 text-weight-thin text-white">
+          {{ normalize(owner) }}
+        </span>
+        <span class="text-subtitle1 text-weight-thin text-white">
+          {{ calculateTime(createdAt) }}
+        </span>
+      </div>
+
+      <div class="row q-gutter-x-sm">
+        <q-badge outline color="accentitems" style="border-radius: 8px" class="badge-item"
+          ><q-icon name="download" color="accentitems" size="xs" />
+          <span class="text-subtitle1 text-weight-thin text-accentitems">
+            {{ views }}
+          </span>
         </q-badge>
-        <div
-          class="flex flex-center bg-white q-mt-sm avatar-circle"
-          style="border-radius: 50px; width: 40px; height: 40px; border: solid 3px black"
-        >
-          <span class="text-weight-bolder">
-            {{ getInitials(owner) }}
+        <q-badge outline color="accentitems" style="border-radius: 8px" class="badge-item"
+          ><q-icon name="eva-star-outline" color="accentitems" size="xs" />
+          <span class="text-subtitle1 text-weight-thin text-accentitems">
+            {{ ratingAverage }}
           </span>
-        </div>
-      </q-card-section>
-      <q-card-section class="col-10">
-        <div class="row justify-end">
-          <q-icon
-            :name="isFavorite ? 'eva-heart' : 'eva-heart-outline'"
-            :color="isFavorite ? 'red' : 'accentitems'"
-            size="md"
-            class="heart-icon cursor-pointer"
-            @click="markAsFavorite"
-          />
-        </div>
-        <div class="q-my-md cursor-pointer" @click="verDetalle(id)">
-          <span class="text-h6 text-white">
-            {{ title }}
+        </q-badge>
+        <q-badge outline color="accentitems" style="border-radius: 8px" class="badge-item"
+          ><q-icon name="attach_money" color="accentitems" size="xs" />
+          <span class="text-subtitle1 text-weight-thin text-accentitems">
+            {{ price }}
           </span>
-          <span class="text-subtitle1 text-weight-thin text-accentitems row">
-            {{ caption }}
-          </span>
-        </div>
-
-        <div class="row justify-between">
-          <span class="text-subtitle1 text-weight-thin text-white">
-            {{ normalize(owner) }}
-          </span>
-          <span class="text-subtitle1 text-weight-thin text-white">
-            {{ calculateTime(createdAt) }}
-          </span>
-        </div>
-
-        <div class="row q-gutter-x-sm">
-          <q-badge outline color="accentitems" style="border-radius: 8px" class="badge-item"
-            ><q-icon name="download" color="accentitems" size="xs" />
-            <span class="text-subtitle1 text-weight-thin text-accentitems">
-              {{ views }}
-            </span>
-          </q-badge>
-          <q-badge outline color="accentitems" style="border-radius: 8px" class="badge-item"
-            ><q-icon name="eva-star-outline" color="accentitems" size="xs" />
-            <span class="text-subtitle1 text-weight-thin text-accentitems">
-              {{ ratingAverage }}
-            </span>
-          </q-badge>
-          <q-badge outline color="accentitems" style="border-radius: 8px" class="badge-item"
-            ><q-icon name="attach_money" color="accentitems" size="xs" />
-            <span class="text-subtitle1 text-weight-thin text-accentitems">
-              {{ price }}
-            </span>
-          </q-badge>
-        </div>
-      </q-card-section>
-    </q-card>
-  </div>
+        </q-badge>
+      </div>
+    </q-card-section>
+  </q-card>
 </template>
 
 <script setup>

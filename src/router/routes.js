@@ -54,8 +54,14 @@ const routes = [
       },
       {
         path: 'apis',
-        component: () => import('pages/ApisPage.vue'),
-        meta: { authRequired: true },
+        children: [
+          { path: '', component: () => import('pages/ApisPage.vue'), meta: { authRequired: true } },
+          {
+            path: 'registro',
+            component: () => import('pages/gestion-apis/RegistroApi.vue'),
+            meta: { authRequired: true },
+          },
+        ],
       },
       {
         path: 'detalle-api/:id',

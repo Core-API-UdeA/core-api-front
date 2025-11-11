@@ -1,8 +1,11 @@
 <template>
   <!-- Tabla principal -->
   <q-card flat class="bg-transparent">
-    <q-card-section class="row q-gutter-x-xl" style="padding: 0">
-      <div v-for="api in apis" :key="api" class="col-md-3">
+    <q-card-section class="row q-col-gutter-md">
+      <div v-if="isMine" class="col-12 col-sm-6 col-md-4 flex" style="justify-content: center;">
+        <CardCreateApi class="full-width" />
+      </div>
+      <div v-for="api in apis" :key="api.id" class="col-12 col-sm-6 col-md-4 flex">
         <CardApi
           :id="api.id"
           :title="api.title"
@@ -13,6 +16,7 @@
           :caption="api.short_summary"
           :ratingAverage="api.rating_average"
           :views="api.views"
+          class="full-width"
         />
       </div>
     </q-card-section>
@@ -40,6 +44,7 @@ import { useApisStore } from 'stores/apis-store.js'
 import { useRouter } from 'vue-router'
 
 const CardApi = defineAsyncComponent(() => import('src/components/apis/CardApi.vue'))
+const CardCreateApi = defineAsyncComponent(() => import('src/components/apis/CardCreateApi.vue'))
 
 const $q = useQuasar()
 
@@ -48,6 +53,13 @@ const loading = ref(false)
 const apisStore = useApisStore()
 const router = useRouter()
 const apis = computed(() => apisStore.records.data || [])
+
+const props = defineProps({
+  isMine: {
+    type: Boolean,
+    default: false,
+  },
+})
 
 const localPagination = computed({
   get() {
@@ -132,3 +144,14 @@ const detalleSolicitud = () => {
   })
 }
 </script>
+
+<style scoped>
+/* Asegura que las cards tengan la misma altura */
+.flex {
+  display: flex;
+}
+
+.full-width {
+  width: 100%;
+}
+</style>

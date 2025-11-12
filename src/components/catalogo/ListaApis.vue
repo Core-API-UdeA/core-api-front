@@ -121,6 +121,9 @@ onMounted(async () => {
     $q.loading.show({
       message: 'Cargando apis...',
     })
+    if(props.isMine){
+      apisStore.filter.myApis = true;
+    }
     await apisStore.cargarApis(true)
   } catch (error) {
     $q.notify({

@@ -7,6 +7,7 @@ const RUTA_API_OVERVIEW = '/catalogo/obteneroverview'
 const RUTA_API_DOCUMENTATION = '/catalogo/obtenerdocumentacion'
 const RUTA_ACTUALIZAR_RATING = '/catalogo/rating'
 const RUTA_ACTUALIZAR_FAVORITO = '/catalogo/favorite'
+const RUTA_ACTUALIZAR_VIEWS = '/catalogo/views'
 const RUTA_OBTENER_USER_INTERACTION = '/catalogo/obteneruserinteraction'
 const RUTA_REGISTRAR_API_OVERVIEW = '/catalogo/registrarapioverview'
 const RUTA_REGISTRAR_API_DOCUMENTATION = '/catalogo/registrardocumentacion'
@@ -164,6 +165,27 @@ export const useApisStore = defineStore('storeApi', () => {
     }
   }
 
+  async function actualizarViews(apiId) {
+    const params = {
+      apiId: apiId,
+    }
+    try {
+      console.log('-----> actualizarViews ')
+      const response = await axiosInstance.put(RUTA_ACTUALIZAR_VIEWS, params)
+
+      const ejec = response.data.ejecucion
+      if (ejec.respuesta.estado === 'OK') {
+        return ejec.data
+      } else {
+        throw new Error(ejec.respuesta.mensaje)
+      }
+    } catch (error) {
+      console.log('Error', error)
+      console.debug('Error al actualizar vistas:', error.message)
+      return null
+    }
+  }
+
   async function registarApiOverview(datosApi, apiId = null) {
     const params = {
       apiId: apiId,
@@ -247,6 +269,7 @@ export const useApisStore = defineStore('storeApi', () => {
     paginationOriginal,
     actualizarFavorito,
     actualizarRating,
+    actualizarViews,
     cargarApis,
     resetStore,
     pagination,

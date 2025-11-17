@@ -32,7 +32,7 @@
           {{ title.length > 80 ? title.substring(0, 80) + '...' : title }}
         </span>
         <span class="text-subtitle1 text-weight-thin text-accentitems row">
-          {{ caption.length > 80 ? caption.substring(0, 80) + '...' : caption }}
+          {{ caption?.length > 80 ? caption.substring(0, 80) + '...' : caption }}
         </span>
       </div>
 

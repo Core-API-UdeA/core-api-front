@@ -19,8 +19,10 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, computed, ref } from 'vue'
+import { defineAsyncComponent, computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useApisStore } from 'stores/apis-store.js'
+import { useAuthStore } from 'stores/auth-store.js'
 
 const ApiOverview = defineAsyncComponent(() => import('src/components/apis/ApiOverview.vue'))
 const ApiDocumentation = defineAsyncComponent(
@@ -34,6 +36,20 @@ const apiId = computed({
   get() {
     return window.atob(route.params.id) || null
   },
+})
+
+const apisStore = useApisStore()
+const authStore = useAuthStore()
+
+onMounted(async () => {
+  try {
+    if (authStore.loggedIn) {
+      console.log('Estamos logged')
+      await apisStore.actualizarViews(apiId.value).catch(() => {})
+    }
+  } catch (error) {
+    console.error('Error al cargar API:', error)
+  }
 })
 </script>
 

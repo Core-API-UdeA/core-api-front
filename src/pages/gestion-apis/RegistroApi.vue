@@ -42,27 +42,28 @@
               <p class="text-white q-mt-md">Debes completar el Paso 1 primero para continuar</p>
               <q-btn label="Volver al Paso 1" color="primary" no-caps @click="step = 1" />
             </div>
-          </div>
-        </q-step>
 
-        <!-- Step 3: Authentication (Placeholder) -->
-        <q-step :name="3" title="Autenticación" icon="lock" :done="step > 3" class="step-content">
-          <div class="step-wrapper">
-            <div class="placeholder-content">
-              <q-icon name="lock" size="64px" color="grey-6" />
-              <p class="text-grey-5 q-mt-md">Configuración de Autenticación</p>
-              <p class="text-caption text-grey-7">Próximamente...</p>
-            </div>
-
-            <div class="row justify-end q-gutter-sm q-mt-lg">
+            <!-- Botones de finalización en Step 2 -->
+            <div v-if="apiCreatedId" class="row justify-end q-gutter-sm q-mt-lg">
               <q-btn
+                label="Saltar este paso"
                 flat
-                label="Anterior"
                 color="grey-5"
                 no-caps
-                @click="$refs.stepper.previous()"
+                @click="finalizarRegistro"
+                :disable="loading"
+              >
+                <q-tooltip class="bg-grey-8"> Puedes agregar endpoints más tarde </q-tooltip>
+              </q-btn>
+              <q-btn
+                label="Finalizar e ir al Overview"
+                color="primary"
+                no-caps
+                icon-right="arrow_forward"
+                @click="finalizarRegistro"
+                :loading="loading"
+                :disable="loading"
               />
-              <q-btn label="Finalizar" color="primary" no-caps @click="finalizarRegistro" />
             </div>
           </div>
         </q-step>
@@ -84,7 +85,9 @@ const $q = useQuasar()
 const step = ref(1)
 const stepper = ref(null)
 const overviewComponent = ref(null)
+const endpointsComponent = ref(null)
 const apiCreatedId = ref(null)
+const loading = ref(false)
 
 function handleOverviewSuccess(apiId) {
   apiCreatedId.value = apiId
@@ -100,6 +103,26 @@ function handleOverviewSuccess(apiId) {
   setTimeout(() => {
     stepper.value.next()
   }, 500)
+}
+
+function handleEndpointsSuccess() {
+  $q.notify({
+    type: 'positive',
+    message: 'Documentación de endpoints guardada exitosamente.',
+    icon: 'check_circle',
+    position: 'top',
+  })
+
+  // Mostrar notificación adicional y esperar un momento
+  setTimeout(() => {
+    $q.notify({
+      type: 'info',
+      message: 'Haz clic en "Finalizar e ir al Overview" para ver tu API',
+      icon: 'info',
+      position: 'top',
+      timeout: 3000,
+    })
+  }, 800)
 }
 
 function handleCancel() {
@@ -122,22 +145,32 @@ function handleCancel() {
 }
 
 function finalizarRegistro() {
-  if (apiCreatedId.value) {
-    $q.notify({
-      type: 'positive',
-      message: 'API registrada exitosamente',
-      icon: 'celebration',
-    })
-
-    router.push(`/main/catalogo/${apiCreatedId.value}`)
-  } else {
+  if (!apiCreatedId.value) {
     $q.notify({
       type: 'warning',
       message: 'Por favor completa el paso 1 primero',
       icon: 'warning',
     })
     step.value = 1
+    return
   }
+
+  loading.value = true
+
+  // Codificar el ID en base64
+  const encodedId = btoa(apiCreatedId.value)
+
+  $q.notify({
+    type: 'positive',
+    message: 'API registrada exitosamente. Redirigiendo...',
+    icon: 'celebration',
+  })
+
+  // Esperar un momento antes de redirigir para mostrar la notificación
+  setTimeout(() => {
+    loading.value = false
+    router.push(`/main/detalle-api/${encodedId}`)
+  }, 1000)
 }
 </script>
 
@@ -187,19 +220,6 @@ function finalizarRegistro() {
   animation: fadeInUp 0.4s ease-out;
 }
 
-.placeholder-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  background: #0d0d0d;
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
-  padding: 40px;
-  text-align: center;
-}
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -236,11 +256,6 @@ function finalizarRegistro() {
       height: 32px;
       font-size: 14px;
     }
-  }
-
-  .placeholder-content {
-    padding: 30px 20px;
-    min-height: 300px;
   }
 }
 </style>

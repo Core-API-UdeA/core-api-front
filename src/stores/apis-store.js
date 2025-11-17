@@ -9,6 +9,7 @@ const RUTA_ACTUALIZAR_RATING = '/catalogo/rating'
 const RUTA_ACTUALIZAR_FAVORITO = '/catalogo/favorite'
 const RUTA_OBTENER_USER_INTERACTION = '/catalogo/obteneruserinteraction'
 const RUTA_REGISTRAR_API_OVERVIEW = '/catalogo/registrarapioverview'
+const RUTA_REGISTRAR_API_DOCUMENTATION = '/catalogo/registrardocumentacion'
 
 export const useApisStore = defineStore('storeApi', () => {
   const filter = ref({
@@ -181,6 +182,34 @@ export const useApisStore = defineStore('storeApi', () => {
     }
   }
 
+  async function registrarApiDocumentation(
+    apiId,
+    versionName,
+    changelog,
+    endpoints,
+    updateExisting = false,
+  ) {
+    const params = {
+      apiId: apiId,
+      versionName: versionName,
+      changelog: changelog,
+      endpoints: endpoints,
+      updateExisting: updateExisting,
+    }
+    try {
+      const response = await axiosInstance.post(RUTA_REGISTRAR_API_DOCUMENTATION, params)
+      const ejec = response.data.ejecucion
+      if (ejec.respuesta.estado === 'OK') {
+        return ejec.data
+      } else {
+        throw new Error(ejec.respuesta.mensaje)
+      }
+    } catch (error) {
+      console.log('Error en el proceso:', error.message)
+      throw error
+    }
+  }
+
   function resetStore() {
     filter.value = {
       estado: '',
@@ -211,6 +240,7 @@ export const useApisStore = defineStore('storeApi', () => {
 
   return {
     consultarApiDocumentation,
+    registrarApiDocumentation,
     consultarUserInteraction,
     consultarApiOverview,
     registarApiOverview,

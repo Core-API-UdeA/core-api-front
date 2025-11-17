@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container bg-bgpage">
+  <div class="page-container">
     <div class="stepper-container">
       <q-stepper
         v-model="step"
@@ -27,24 +27,20 @@
           </div>
         </q-step>
 
-        <!-- Step 2: Endpoints (Placeholder) -->
+        <!-- Step 2: Endpoints -->
         <q-step :name="2" title="Endpoints" icon="api" :done="step > 2" class="step-content">
           <div class="step-wrapper">
-            <div class="placeholder-content">
-              <q-icon name="api" size="64px" color="grey-6" />
-              <p class="text-grey-5 q-mt-md">Configuración de Endpoints</p>
-              <p class="text-caption text-grey-7">Próximamente...</p>
-            </div>
-
-            <div class="row justify-end q-gutter-sm q-mt-lg">
-              <q-btn
-                flat
-                label="Anterior"
-                color="grey-5"
-                no-caps
-                @click="$refs.stepper.previous()"
-              />
-              <q-btn label="Siguiente" color="primary" no-caps @click="$refs.stepper.next()" />
+            <RegistrarEndpoints
+              v-if="apiCreatedId"
+              ref="endpointsComponent"
+              :api-id="apiCreatedId"
+              @success="handleEndpointsSuccess"
+              @cancel="handleCancel"
+            />
+            <div v-else class="text-center q-pa-xl">
+              <q-icon name="warning" size="48px" color="warning" />
+              <p class="text-white q-mt-md">Debes completar el Paso 1 primero para continuar</p>
+              <q-btn label="Volver al Paso 1" color="primary" no-caps @click="step = 1" />
             </div>
           </div>
         </q-step>
@@ -80,6 +76,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import RegistrarApiOverview from 'src/components/apis/FormularioApiOverview.vue'
+import RegistrarEndpoints from 'src/components/apis/FormularioApiDocumentation.vue'
 
 const router = useRouter()
 const $q = useQuasar()
@@ -147,6 +144,7 @@ function finalizarRegistro() {
 <style lang="scss" scoped>
 .page-container {
   min-height: 100vh;
+  background: #000000;
   padding: 40px 20px;
 }
 

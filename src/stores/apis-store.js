@@ -186,7 +186,7 @@ export const useApisStore = defineStore('storeApi', () => {
     }
   }
 
-  async function registarApiOverview(datosApi, apiId = null) {
+  async function registarApiOverview(apiId = null, datosApi) {
     const params = {
       apiId: apiId,
       datosApi: datosApi,

@@ -1,3 +1,4 @@
+
 <template>
   <!-- Contenido cargado -->
   <div v-if="apiCargada">
@@ -66,7 +67,11 @@
             anchor="bottom middle"
             self="top middle"
           >
-            {{ hoverRating > 0 ? `Calificar con ${hoverRating} estrella${hoverRating !== 1 ? 's' : ''}` : 'Haz clic para calificar' }}
+            {{
+              hoverRating > 0
+                ? `Calificar con ${hoverRating} estrella${hoverRating !== 1 ? 's' : ''}`
+                : 'Haz clic para calificar'
+            }}
           </q-tooltip>
           <q-tooltip
             v-else
@@ -76,6 +81,21 @@
           >
             Ya has calificado con {{ userRating }} estrella{{ userRating !== 1 ? 's' : '' }}
           </q-tooltip>
+        </div>
+
+        <!-- Botones de edición (solo para el owner) -->
+        <div v-if="isOwner" class="row q-gutter-xs">
+          <q-btn
+            flat
+            dense
+            round
+            icon="edit"
+            color="primary"
+            size="sm"
+            @click="editarOverview"
+          >
+            <q-tooltip class="bg-primary">Editar información general</q-tooltip>
+          </q-btn>
         </div>
       </div>
 
@@ -121,7 +141,20 @@
 
     <!-- README Section -->
     <div class="column q-pt-xl q-mt-lg readme-section">
-      <span class="text-white text-weight-medium q-mb-md" style="font-size: 1vmax"> README </span>
+      <div class="row justify-between items-center q-mb-md">
+        <span class="text-white text-weight-medium" style="font-size: 1vmax"> README </span>
+        <q-btn
+          v-if="isOwner"
+          flat
+          dense
+          icon="edit"
+          label="Editar README"
+          color="primary"
+          size="sm"
+          no-caps
+          @click="editarOverview"
+        />
+      </div>
       <div class="readme-content markdown-body" v-html="renderedMarkdown"></div>
     </div>
   </div>
@@ -191,6 +224,30 @@
       <div class="skeleton-item" style="width: 95%; height: 12px"></div>
     </div>
   </div>
+
+  <!-- Dialogs para edición -->
+
+  <!-- Dialog para editar Overview -->
+  <q-dialog v-model="showEditOverviewDialog" maximized dark>
+    <q-card flat class="bg-dark">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6 text-white">Editar API Overview</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+
+      <q-card-section class="q-pa-md">
+        <RegistrarApiOverview
+          :api-id="apiId"
+          :initial-data="api"
+          @success="handleOverviewUpdated"
+          @cancel="showEditOverviewDialog = false"
+        />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+
+
 </template>
 
 <script setup>
@@ -199,6 +256,7 @@ import { useQuasar } from 'quasar'
 import { useApisStore } from 'stores/apis-store.js'
 import { useAuthStore } from 'stores/auth-store.js'
 import { marked } from 'marked'
+import RegistrarApiOverview from 'src/components/apis/FormularioApiOverview.vue'
 
 const props = defineProps({
   apiId: {
@@ -206,6 +264,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const emit = defineEmits(['owner'])
 
 const apisStore = useApisStore()
 const authStore = useAuthStore()
@@ -217,12 +277,18 @@ const isFavorite = ref(false)
 const alreadyRated = ref(false)
 const userRating = ref(0)
 const hoverRating = ref(0)
+const showEditOverviewDialog = ref(false)
 
 onMounted(async () => {
   try {
     $q.loading.show()
     apiOverview.value = await apisStore.consultarApiOverview(props.apiId)
     apiCargada.value = true
+
+    // Actualizar vistas de forma silenciosa
+    apisStore.actualizarViews(props.apiId).catch(() => {
+      // Ignorar errores
+    })
 
     if (authStore.loggedIn) {
       const interaction = await apisStore.consultarUserInteraction(props.apiId)
@@ -243,6 +309,13 @@ onMounted(async () => {
 
 const api = computed(() => apiOverview.value || {})
 
+// Verificar si el usuario actual es el owner
+const isOwner = computed(() => {
+  if (!authStore.loggedIn || !api.value.owner.email) return false
+  emit('owner', api.value.owner.email)
+  return authStore.user?.email === api.value.owner.email
+})
+
 function getInitials(cadena) {
   if (!cadena) return ''
   return cadena.slice(0, 2).toUpperCase()
@@ -251,17 +324,14 @@ function getInitials(cadena) {
 function getStarIcon(position) {
   const rating = api.value.rating_average || 0
 
-  // Si ya calificó, mostrar su calificación
   if (alreadyRated.value) {
     return position <= userRating.value ? 'star' : 'star_outline'
   }
 
-  // Si está haciendo hover, mostrar preview
   if (hoverRating.value > 0) {
     return position <= hoverRating.value ? 'star' : 'star_outline'
   }
 
-  // Mostrar el rating promedio
   const fullStars = Math.floor(rating)
   const hasHalfStar = rating - fullStars >= 0.25 && rating - fullStars < 0.75
 
@@ -275,17 +345,14 @@ function getStarIcon(position) {
 }
 
 function getStarColor(position) {
-  // Si ya calificó, mostrar en amarillo su calificación
   if (alreadyRated.value) {
     return position <= userRating.value ? 'yellow-7' : 'grey-5'
   }
 
-  // Si está haciendo hover, mostrar preview en amarillo
   if (hoverRating.value > 0) {
     return position <= hoverRating.value ? 'yellow-7' : 'grey-5'
   }
 
-  // Mostrar el rating promedio
   const rating = api.value.rating_average || 0
   const fullStars = Math.floor(rating)
   const hasHalfStar = rating - fullStars >= 0.25 && rating - fullStars < 0.75
@@ -298,7 +365,7 @@ function getStarColor(position) {
 }
 
 const parsedStack = computed(() =>
-  api.value.technology_stack ? api.value.technology_stack.split(',').map((t) => t.trim()) : [],
+  api.value.technology_stack ? api.value.technology_stack.split(',').map((t) => t.trim()) : []
 )
 
 const renderedMarkdown = computed(() => {
@@ -397,7 +464,6 @@ async function rateApi(rating) {
     alreadyRated.value = interaction.alreadyRated
     userRating.value = rating
 
-    // Actualizar el rating promedio de la API
     apiOverview.value = await apisStore.consultarApiOverview(props.apiId)
 
     $q.notify({
@@ -414,6 +480,31 @@ async function rateApi(rating) {
       message: 'Error al calificar: ' + error.message,
     })
     console.error('Error al calificar:', error)
+  } finally {
+    $q.loading.hide()
+  }
+}
+
+// Funciones de edición
+function editarOverview() {
+  showEditOverviewDialog.value = true
+}
+
+async function handleOverviewUpdated() {
+  showEditOverviewDialog.value = false
+
+  $q.loading.show()
+  try {
+    // Recargar el overview actualizado
+    apiOverview.value = await apisStore.consultarApiOverview(props.apiId)
+
+    $q.notify({
+      type: 'positive',
+      message: 'API actualizada exitosamente',
+      icon: 'check_circle',
+    })
+  } catch (error) {
+    console.error('Error al recargar overview:', error)
   } finally {
     $q.loading.hide()
   }

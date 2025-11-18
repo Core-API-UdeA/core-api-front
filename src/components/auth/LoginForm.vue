@@ -183,16 +183,12 @@ function googleSignIn() {
   }
 
   try {
-    // En móviles, simular click en el botón renderizado
     const googleButton = document.querySelector('#google-signin-button div[role="button"]')
     if (googleButton) {
       googleButton.click()
     } else {
-      // Fallback: usar prompt con configuración móvil
       google.accounts.id.prompt((notification) => {
         if (notification.isNotDisplayed()) {
-          console.log('Prompt no mostrado:', notification.getNotDisplayedReason())
-          // Intentar con redirect como último recurso
           fallbackToRedirect()
         }
       })

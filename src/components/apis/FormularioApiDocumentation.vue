@@ -3,7 +3,9 @@
     <q-card flat class="endpoints-card">
       <q-card-section class="q-pb-none">
         <div class="row items-center justify-between q-mb-md">
-          <div class="text-h5 text-white text-weight-medium">Endpoints de la API</div>
+          <div class="text-h5 text-white text-weight-medium">
+            {{ modoEdicion ? 'Editar Endpoints' : 'Agregar Endpoints' }}
+          </div>
           <q-chip color="primary" text-color="white" icon="info">
             {{ endpoints.length }} endpoint{{ endpoints.length !== 1 ? 's' : '' }}
           </q-chip>
@@ -22,9 +24,15 @@
               bg-color="dark"
               placeholder="v1, 1.0.0, etc."
               :rules="[(val) => !!val || 'La versión es requerida']"
+              :disable="modoEdicion"
             >
               <template v-slot:prepend>
                 <q-icon name="tag" color="primary" />
+              </template>
+              <template v-if="modoEdicion" v-slot:append>
+                <q-icon name="lock" color="grey-5">
+                  <q-tooltip>No se puede cambiar la versión al editar</q-tooltip>
+                </q-icon>
               </template>
             </q-input>
           </div>
@@ -62,13 +70,14 @@
         <!-- Lista de endpoints -->
         <q-expansion-item
           v-for="(endpoint, index) in endpoints"
-          :key="index"
+          :key="endpoint.tempId || index"
           :label="`${endpoint.method} ${endpoint.path || '/path'}`"
           :caption="endpoint.description || 'Sin descripción'"
           dark
           class="endpoint-item q-mb-sm"
           :header-class="`endpoint-header method-${endpoint.method.toLowerCase()}`"
           expand-icon-class="text-white"
+          :default-opened="index === 0"
         >
           <template v-slot:header>
             <div class="row items-center full-width">
@@ -91,7 +100,7 @@
                 icon="delete"
                 color="negative"
                 size="sm"
-                @click.stop="eliminarEndpoint(index)"
+                @click.stop.prevent="eliminarEndpoint(index)"
               >
                 <q-tooltip>Eliminar endpoint</q-tooltip>
               </q-btn>
@@ -446,7 +455,7 @@
             :disable="loading"
           />
           <q-btn
-            label="Guardar Documentación"
+            :label="modoEdicion ? 'Actualizar Documentación' : 'Guardar Documentación'"
             color="primary"
             no-caps
             @click="onSubmit"
@@ -464,7 +473,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useApisStore } from 'stores/apis-store.js'
 
@@ -481,9 +490,12 @@ const apisStore = useApisStore()
 const $q = useQuasar()
 
 const loading = ref(false)
+const loadingData = ref(false)
 const versionName = ref('v1')
 const changelog = ref('')
 const endpoints = ref([])
+const modoEdicion = ref(false)
+const initialLoadDone = ref(false)
 
 const metodosHttp = [
   { label: 'GET', value: 'GET' },
@@ -517,6 +529,82 @@ const isValid = computed(() => {
   )
 })
 
+onMounted(async () => {
+  if (!initialLoadDone.value) {
+    await cargarDocumentacionExistente()
+    initialLoadDone.value = true
+  }
+})
+
+async function cargarDocumentacionExistente() {
+  try {
+    loadingData.value = true
+
+    endpoints.value = []
+    versionName.value = 'v1'
+    changelog.value = ''
+    modoEdicion.value = false
+
+    const documentation = await apisStore.consultarApiDocumentation(props.apiId)
+
+    if (documentation && documentation.documentation && documentation.documentation.length > 0) {
+      modoEdicion.value = true
+
+      const loadedEndpoints = documentation.documentation.map((endpoint, idx) => {
+
+        return {
+          tempId: endpoint.id || `temp-${Date.now()}-${idx}`,
+          id: endpoint.id,
+          path: endpoint.path,
+          method: endpoint.method,
+          description: endpoint.description || '',
+          activeTab: 'parameters',
+          parameters: (endpoint.parameters || []).map((p) => ({
+            name: p.name || '',
+            type: p.type || 'string',
+            required: p.required || false,
+            description: p.description || '',
+          })),
+          bodies: (endpoint.body || []).map((b) => ({
+            content_type: b.content_type || 'application/json',
+            example: b.example || null,
+            exampleText: b.example ? JSON.stringify(b.example, null, 2) : '',
+            jsonError: null,
+          })),
+          responses: (endpoint.responses || []).map((r) => ({
+            status_code: r.code || 200,
+            content_type: r.content_type || 'application/json',
+            example: r.example || null,
+            exampleText: r.example ? JSON.stringify(r.example, null, 2) : '',
+            jsonError: null,
+          })),
+        }
+      })
+
+      versionName.value = documentation.version.name
+      changelog.value = documentation.version.changelog
+
+      // Asignar el nuevo array
+      endpoints.value = loadedEndpoints
+
+      $q.notify({
+        type: 'info',
+        message: `${endpoints.value.length} endpoint(s) cargado(s). Puedes editarlos o agregar nuevos.`,
+        icon: 'info',
+      })
+    } else {
+      endpoints.value = []
+    }
+  } catch (error) {
+    console.error('Error al cargar documentación:', error)
+    // Iniciar en modo creación
+    endpoints.value = []
+    modoEdicion.value = false
+  } finally {
+    loadingData.value = false
+  }
+}
+
 function getMethodColor(method) {
   const colors = {
     GET: 'blue',
@@ -529,7 +617,9 @@ function getMethodColor(method) {
 }
 
 function agregarEndpoint() {
-  endpoints.value.push({
+  const newEndpoint = {
+    // Agregar un ID único temporal
+    tempId: `temp-${Date.now()}-${Math.random()}`,
     path: '',
     method: 'GET',
     description: '',
@@ -537,17 +627,34 @@ function agregarEndpoint() {
     parameters: [],
     bodies: [],
     responses: [],
-  })
+  }
+
+  endpoints.value.push(newEndpoint)
 }
 
 function eliminarEndpoint(index) {
   $q.dialog({
     title: 'Confirmar eliminación',
-    message: '¿Estás seguro de eliminar este endpoint?',
+    message: `¿Estás seguro de eliminar el endpoint ${endpoints.value[index].method} ${endpoints.value[index].path}?`,
     dark: true,
-    cancel: true,
+    cancel: {
+      label: 'Cancelar',
+      flat: true,
+      color: 'grey-5',
+    },
+    ok: {
+      label: 'Eliminar',
+      color: 'negative',
+    },
   }).onOk(() => {
+    // Eliminar el endpoint
     endpoints.value.splice(index, 1)
+
+    $q.notify({
+      type: 'info',
+      message: 'Endpoint eliminado. Recuerda guardar los cambios.',
+      icon: 'delete',
+    })
   })
 }
 
@@ -624,6 +731,7 @@ function parseJsonResponse(endpointIndex, responseIndex) {
 }
 
 async function onSubmit() {
+
   // Validar JSONs antes de enviar
   let hasErrors = false
   endpoints.value.forEach((endpoint, eIndex) => {
@@ -654,37 +762,44 @@ async function onSubmit() {
 
   try {
     // Formatear endpoints para el backend
-    const formattedEndpoints = endpoints.value.map((ep) => ({
-      path: ep.path,
-      method: ep.method,
-      description: ep.description,
-      parameters: ep.parameters.map((p) => ({
-        name: p.name,
-        type: p.type,
-        required: p.required,
-        description: p.description,
-      })),
-      bodies: ep.bodies.map((b) => ({
-        content_type: b.content_type,
-        example: b.example,
-      })),
-      responses: ep.responses.map((r) => ({
-        status_code: r.status_code,
-        content_type: r.content_type,
-        example: r.example,
-      })),
-    }))
+    const formattedEndpoints = endpoints.value.map((ep, idx) => {
+      return {
+        path: ep.path,
+        method: ep.method,
+        description: ep.description,
+        parameters: ep.parameters.map((p) => ({
+          name: p.name,
+          type: p.type,
+          required: p.required,
+          description: p.description,
+        })),
+        bodies: ep.bodies.map((b) => ({
+          content_type: b.content_type,
+          example: b.example,
+        })),
+        responses: ep.responses.map((r) => ({
+          status_code: r.status_code,
+          content_type: r.content_type,
+          example: r.example,
+        })),
+      }
+    })
+
 
     const result = await apisStore.registrarApiDocumentation(
       props.apiId,
       versionName.value,
       changelog.value,
       formattedEndpoints,
+      modoEdicion.value, // updateExisting
     )
+
 
     $q.notify({
       type: 'positive',
-      message: 'Documentación guardada exitosamente',
+      message: modoEdicion.value
+        ? 'Documentación actualizada exitosamente'
+        : 'Documentación guardada exitosamente',
       icon: 'check_circle',
     })
 
@@ -711,6 +826,13 @@ defineExpose({
     versionName.value = 'v1'
     changelog.value = ''
     endpoints.value = []
+    modoEdicion.value = false
+    initialLoadDone.value = false
+  },
+  reloadDocumentation: async () => {
+    initialLoadDone.value = false
+    await cargarDocumentacionExistente()
+    initialLoadDone.value = true
   },
 })
 </script>

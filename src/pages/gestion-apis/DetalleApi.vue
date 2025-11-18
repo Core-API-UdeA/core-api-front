@@ -10,10 +10,10 @@
       <q-tab name="Documentation" label="Documentation" no-caps />
     </q-tabs>
     <div class="q-pa-sm">
-      <ApiOverview :apiId="apiId" v-if="tab === 'Overview'" />
+      <ApiOverview :apiId="apiId" v-if="tab === 'Overview'" @owner="getOwner"/>
     </div>
     <div class="q-pa-sm">
-      <ApiDocumentation :apiId="apiId" v-if="tab === 'Documentation'" />
+      <ApiDocumentation :apiId="apiId" v-if="tab === 'Documentation'" :owner="owner"/>
     </div>
   </q-page>
 </template>
@@ -32,6 +32,7 @@ const ApiDocumentation = defineAsyncComponent(
 const route = useRoute()
 
 const tab = ref('Overview')
+const owner = ref(null)
 const apiId = computed({
   get() {
     return window.atob(route.params.id) || null
@@ -44,13 +45,16 @@ const authStore = useAuthStore()
 onMounted(async () => {
   try {
     if (authStore.loggedIn) {
-      console.log('Estamos logged')
       await apisStore.actualizarViews(apiId.value).catch(() => {})
     }
   } catch (error) {
     console.error('Error al cargar API:', error)
   }
 })
+
+function getOwner(ownerD) {
+  owner.value = ownerD
+}
 </script>
 
 <style lang="scss" scoped>

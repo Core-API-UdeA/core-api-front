@@ -223,7 +223,7 @@ function googleSignIn() {
   if (!window.google) {
     $q.notify({
       color: 'negative',
-      textColor: 'white',
+      textColor: 'grey',
       icon: 'warning',
       message: 'Google Sign-In no está disponible',
     })

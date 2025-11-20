@@ -11,6 +11,7 @@ const RUTA_ACTUALIZAR_VIEWS = '/catalogo/views'
 const RUTA_OBTENER_USER_INTERACTION = '/catalogo/obteneruserinteraction'
 const RUTA_REGISTRAR_API_OVERVIEW = '/catalogo/registrarapioverview'
 const RUTA_REGISTRAR_API_DOCUMENTATION = '/catalogo/registrardocumentacion'
+const RUTA_API_PLANES = '/catalogo/planes'
 
 export const useApisStore = defineStore('storeApi', () => {
   const filter = ref({
@@ -126,6 +127,23 @@ export const useApisStore = defineStore('storeApi', () => {
       }
     } catch (error) {
       console.error('Error en consultarApiDocumentation:', error)
+      throw error
+    }
+  }
+
+  async function consultarApiPlanes(apiId) {
+    try {
+      const response = await axiosInstance.get(RUTA_API_PLANES, {
+        params: { apiId },
+      })
+      const ejec = response.data.ejecucion
+      if (ejec.respuesta.estado === 'OK') {
+        return ejec.data
+      } else {
+        throw new Error(ejec.respuesta.mensaje)
+      }
+    } catch (error) {
+      console.error('Error al consultar planes:', error)
       throw error
     }
   }
@@ -268,6 +286,7 @@ export const useApisStore = defineStore('storeApi', () => {
     registarApiOverview,
     paginationOriginal,
     actualizarFavorito,
+    consultarApiPlanes,
     actualizarRating,
     actualizarViews,
     cargarApis,

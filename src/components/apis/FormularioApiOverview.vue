@@ -511,7 +511,7 @@ async function onSubmit() {
     let result
 
     if (modoEdicion.value) {
-      result = await apisStore.registarApiOverview(props.apiId, formData.value)
+      result = await apisStore.registarApiOverview(formData.value, props.apiId)
 
       $q.notify({
         type: 'positive',

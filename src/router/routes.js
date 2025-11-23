@@ -9,6 +9,21 @@ const routes = [
         component: () => import('pages/gestion-apis/DetalleApi.vue'),
         props: true,
       },
+      {
+        path: '/payment/success',
+        name: 'payment-success',
+        component: () => import('pages/pagos/PaymentSuccess.vue'),
+        meta: { authRequired: true },
+      },
+      {
+        path: '/payment/cancel',
+        name: 'payment-cancel',
+        component: () => import('pages/pagos/PaymentCancel.vue'),
+        meta: {
+          authRequired: false,
+          title: 'Pago Cancelado',
+        },
+      },
     ],
   },
 

@@ -204,11 +204,13 @@ export const useApisStore = defineStore('storeApi', () => {
     }
   }
 
-  async function registarApiOverview(apiId = null, datosApi) {
+  async function registarApiOverview(datosApi, apiId = null) {
     const params = {
       apiId: apiId,
       datosApi: datosApi,
     }
+
+    console.log('-----> registarApiOverview ', params)
     try {
       const response = await axiosInstance.post(RUTA_REGISTRAR_API_OVERVIEW, params)
       const ejec = response.data.ejecucion

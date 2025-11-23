@@ -43,7 +43,47 @@
               <q-btn label="Volver al Paso 1" color="primary" no-caps @click="step = 1" />
             </div>
 
-            <!-- Botones de finalización en Step 2 -->
+            <!-- Botones de navegación en Step 2 -->
+            <div v-if="apiCreatedId" class="row justify-end q-gutter-sm q-mt-lg">
+              <q-btn
+                label="Saltar este paso"
+                flat
+                color="grey-5"
+                no-caps
+                @click="stepper.next()"
+                :disable="loading"
+              >
+                <q-tooltip class="bg-grey-8"> Puedes agregar endpoints más tarde </q-tooltip>
+              </q-btn>
+              <q-btn
+                label="Continuar a Planes"
+                color="primary"
+                no-caps
+                icon-right="arrow_forward"
+                @click="stepper.next()"
+                :disable="loading"
+              />
+            </div>
+          </div>
+        </q-step>
+
+        <!-- Step 3: Plans -->
+        <q-step :name="3" title="Planes" icon="payment" :done="step > 3" class="step-content">
+          <div class="step-wrapper">
+            <RegistrarPlanes
+              v-if="apiCreatedId"
+              ref="plansComponent"
+              :api-id="apiCreatedId"
+              @success="handlePlansSuccess"
+              @cancel="handleCancel"
+            />
+            <div v-else class="text-center q-pa-xl">
+              <q-icon name="warning" size="48px" color="warning" />
+              <p class="text-white q-mt-md">Debes completar el Paso 1 primero para continuar</p>
+              <q-btn label="Volver al Paso 1" color="primary" no-caps @click="step = 1" />
+            </div>
+
+            <!-- Botones de finalización en Step 3 -->
             <div v-if="apiCreatedId" class="row justify-end q-gutter-sm q-mt-lg">
               <q-btn
                 label="Saltar este paso"
@@ -53,7 +93,7 @@
                 @click="finalizarRegistro"
                 :disable="loading"
               >
-                <q-tooltip class="bg-grey-8"> Puedes agregar endpoints más tarde </q-tooltip>
+                <q-tooltip class="bg-grey-8"> Puedes agregar planes más tarde </q-tooltip>
               </q-btn>
               <q-btn
                 label="Finalizar e ir al Overview"
@@ -78,6 +118,7 @@ import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import RegistrarApiOverview from 'src/components/apis/FormularioApiOverview.vue'
 import RegistrarEndpoints from 'src/components/apis/FormularioApiDocumentation.vue'
+import RegistrarPlanes from 'src/components/pagos/FormularioApiPlans.vue'
 
 const router = useRouter()
 const $q = useQuasar()
@@ -86,6 +127,7 @@ const step = ref(1)
 const stepper = ref(null)
 const overviewComponent = ref(null)
 const endpointsComponent = ref(null)
+const plansComponent = ref(null)
 const apiCreatedId = ref(null)
 const loading = ref(false)
 
@@ -113,11 +155,25 @@ function handleEndpointsSuccess() {
     position: 'top',
   })
 
-  // Mostrar notificación adicional y esperar un momento
+  // Avanzar al paso de planes
+  setTimeout(() => {
+    stepper.value.next()
+  }, 500)
+}
+
+function handlePlansSuccess() {
+  $q.notify({
+    type: 'positive',
+    message: 'Plan guardado exitosamente.',
+    icon: 'check_circle',
+    position: 'top',
+  })
+
+  // Mostrar notificación adicional
   setTimeout(() => {
     $q.notify({
       type: 'info',
-      message: 'Haz clic en "Finalizar e ir al Overview" para ver tu API',
+      message: 'Puedes agregar más planes o finalizar el registro',
       icon: 'info',
       position: 'top',
       timeout: 3000,

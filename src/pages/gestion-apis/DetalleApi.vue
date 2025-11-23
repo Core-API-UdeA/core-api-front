@@ -21,7 +21,9 @@
         :api-id="apiId"
         :plans="apiPlans"
         :user-subscriptions="userSubscriptions"
+        :owner="owner"
         @plan-selected="handlePlanSelected"
+        @plans-updated="recargarPlanes"
       />
     </div>
   </q-page>
@@ -30,6 +32,7 @@
 <script setup>
 import { defineAsyncComponent, computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useQuasar } from 'quasar'
 import { useApisStore } from 'stores/apis-store.js'
 import { useAuthStore } from 'stores/auth-store.js'
 import { usePagosStore } from 'stores/pagos-store.js'
@@ -43,6 +46,7 @@ const ApiDocumentation = defineAsyncComponent(
 )
 
 const route = useRoute()
+const $q = useQuasar()
 
 const tab = ref('Overview')
 const apiPlans = ref([])
@@ -60,20 +64,62 @@ const pagosStore = usePagosStore()
 
 onMounted(async () => {
   try {
+    await cargarDatosApi()
+  } catch (error) {
+    console.error('Error al cargar API:', error)
+  }
+})
+
+async function cargarDatosApi() {
+  try {
+    $q.loading.show()
+
+    // Cargar planes
     apiPlans.value = await apisStore.consultarApiPlanes(apiId.value)
 
+    // Si el usuario está logueado
     if (authStore.loggedIn) {
+      // Actualizar vistas de forma silenciosa
       await apisStore.actualizarViews(apiId.value).catch(() => {})
 
+      // Cargar suscripciones del usuario
       await pagosStore.cargarMisSuscripciones()
       userSubscriptions.value = pagosStore.suscripciones.filter(
         sub => sub.api_id === apiId.value
       )
     }
   } catch (error) {
-    console.error('Error al cargar API:', error)
+    console.error('Error al cargar datos:', error)
+  } finally {
+    $q.loading.hide()
   }
-})
+}
+
+async function recargarPlanes() {
+  try {
+    $q.loading.show()
+
+    // Recargar solo los planes
+    apiPlans.value = await apisStore.consultarApiPlanes(apiId.value)
+
+    // Si el usuario está logueado, recargar suscripciones también
+    if (authStore.loggedIn) {
+      await pagosStore.cargarMisSuscripciones()
+      userSubscriptions.value = pagosStore.suscripciones.filter(
+        sub => sub.api_id === apiId.value
+      )
+    }
+  } catch (error) {
+    console.error('Error al recargar planes:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Error al recargar los planes',
+      icon: 'error',
+    })
+  } finally {
+    $q.loading.hide()
+  }
+}
 
 function getOwner(ownerD) {
   owner.value = ownerD

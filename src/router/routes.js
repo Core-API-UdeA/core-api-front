@@ -12,13 +12,13 @@ const routes = [
       {
         path: '/payment/success',
         name: 'payment-success',
-        component: () => import('pages/pagos/PaymentSuccess.vue'),
+        component: () => import('pages/pagos/PaymentSuccessPage.vue'),
         meta: { authRequired: true },
       },
       {
         path: '/payment/cancel',
         name: 'payment-cancel',
-        component: () => import('pages/pagos/PaymentCancel.vue'),
+        component: () => import('pages/pagos/PaymentCancelPage.vue'),
         meta: {
           authRequired: false,
           title: 'Pago Cancelado',

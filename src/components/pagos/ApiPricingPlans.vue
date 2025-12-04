@@ -1,5 +1,32 @@
 <template>
   <div class="pricing-container">
+    <!-- Certification Badge -->
+    <div class="certification-banner">
+      <div class="certification-content">
+        <div class="certification-icon">
+          <q-icon name="verified" size="24px" />
+        </div>
+        <div class="certification-text">
+          <div class="certification-title">API Certificada por Core API</div>
+          <div class="certification-subtitle">
+            Esta API ha sido verificada y cumple con nuestros estándares de calidad, seguridad y
+            rendimiento
+          </div>
+        </div>
+        <q-btn flat dense round icon="info" size="sm" color="white" class="certification-info-btn">
+          <q-tooltip class="bg-dark" max-width="300px">
+            <div class="text-weight-medium q-mb-xs">¿Qué significa esto?</div>
+            <ul class="q-pl-md q-mb-none" style="font-size: 12px">
+              <li>Documentación completa y actualizada</li>
+              <li>Cumplimiento de estándares de seguridad</li>
+              <li>Monitoreo continuo de disponibilidad</li>
+              <li>Soporte técnico garantizado</li>
+              <li>Respaldo del equipo de Core API</li>
+            </ul>
+          </q-tooltip>
+        </q-btn>
+      </div>
+    </div>
     <!-- Header -->
     <div class="row justify-between items-center q-mb-lg">
       <div>
@@ -77,15 +104,7 @@
 
           <!-- Botones de edición (solo para owner) -->
           <div v-if="isOwner" class="plan-edit-actions">
-            <q-btn
-              flat
-              dense
-              round
-              size="sm"
-              icon="edit"
-              color="primary"
-              @click="editarPlan(plan)"
-            >
+            <q-btn flat dense round size="sm" icon="edit" color="primary" @click="editarPlan(plan)">
               <q-tooltip class="bg-primary">Editar plan</q-tooltip>
             </q-btn>
             <q-btn
@@ -131,7 +150,8 @@
               <div class="feature-item">
                 <q-icon name="check_circle" color="primary" size="18px" />
                 <span>
-                  <strong>{{ formatRequestLimit(plan.max_requests_per_month) }}</strong> requests/mes
+                  <strong>{{ formatRequestLimit(plan.max_requests_per_month) }}</strong>
+                  requests/mes
                 </span>
               </div>
 
@@ -466,7 +486,8 @@ async function confirmarPlan() {
 
     $q.notify({
       type: 'negative',
-      message: error.response?.data?.ejecucion?.respuesta?.mensaje || 'Error al procesar la suscripción',
+      message:
+        error.response?.data?.ejecucion?.respuesta?.mensaje || 'Error al procesar la suscripción',
       icon: 'error',
     })
   } finally {
@@ -495,7 +516,8 @@ function editarPlan(plan) {
 function confirmarEliminarPlan(planId) {
   $q.dialog({
     title: 'Eliminar Plan',
-    message: '¿Estás seguro de que deseas eliminar este plan? Los usuarios suscritos perderán el acceso.',
+    message:
+      '¿Estás seguro de que deseas eliminar este plan? Los usuarios suscritos perderán el acceso.',
     dark: true,
     cancel: {
       label: 'Cancelar',
@@ -564,6 +586,120 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+// Certification Banner
+.certification-banner {
+  background: linear-gradient(135deg, rgba(0, 168, 168, 0.15) 0%, rgba(0, 168, 168, 0.05) 100%);
+  border: 1px solid rgba(0, 168, 168, 0.3);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #00a8a8, #00d4d4, #00a8a8);
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+  }
+}
+
+.certification-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.certification-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #00a8a8, #00d4d4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 16px rgba(0, 168, 168, 0.4);
+}
+
+.certification-text {
+  flex: 1;
+}
+
+.certification-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.certification-subtitle {
+  font-size: 13px;
+  color: #b0b0b0;
+  line-height: 1.5;
+}
+
+.certification-info-btn {
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 200% 0%;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .certification-banner {
+    padding: 16px 18px;
+    margin-bottom: 24px;
+  }
+
+  .certification-content {
+    gap: 12px;
+  }
+
+  .certification-icon {
+    width: 40px;
+    height: 40px;
+
+    .q-icon {
+      font-size: 20px;
+    }
+  }
+
+  .certification-title {
+    font-size: 14px;
+  }
+
+  .certification-subtitle {
+    font-size: 12px;
+  }
+
+  .certification-info-btn {
+    display: none; // Ocultar en móvil para ahorrar espacio
+  }
+}
+
 .pricing-container {
   padding: 20px 0;
 }

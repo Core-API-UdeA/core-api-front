@@ -17,12 +17,15 @@
         <div class="border-item" @click="googleSignIn">
           <Icon icon="logos:google-icon" width="48" />
         </div>
+        <!-- Botón oculto de Google -->
+        <div id="google-signin-button" style="display: none"></div>
+
         <div class="border-item" @click="githubSignIn">
           <Icon icon="simple-icons:github" width="48" color="#000000" />
         </div>
-        <div class="border-item">
+        <!-- <div class="border-item">
           <Icon icon="logos:microsoft-icon" width="48" />
-        </div>
+        </div> -->
       </q-card-section>
 
       <q-card-section class="flex flex-center" style="margin: 0">

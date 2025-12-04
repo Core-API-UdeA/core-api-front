@@ -15,18 +15,18 @@
 
       <q-card-section class="q-gutter-x-md flex flex-center">
         <!-- Google Sign In Button -->
-        <div class="border-item" @click="googleSignIn">
+        <div class="border-item" @click="initiateGoogleSignIn">
           <Icon icon="logos:google-icon" width="48" />
         </div>
-        <!-- Botón oculto de Google para móviles -->
-        <div id="google-signin-button" style="display: none"></div>
+        <!-- Botón oculto de Google -->
+        <div id="google-signin-button-register" style="display: none"></div>
 
-        <div class="border-item" @click="githubSignIn">
+        <div class="border-item" @click="initiateGithubSignIn">
           <Icon icon="simple-icons:github" width="48" color="#000000" />
         </div>
-        <div class="border-item">
+        <!-- <div class="border-item">
           <Icon icon="logos:microsoft-icon" width="48" />
-        </div>
+        </div> -->
       </q-card-section>
 
       <q-card-section class="flex flex-center" style="margin: 0">
@@ -152,6 +152,43 @@
         </span>
       </q-card-section>
     </q-form>
+
+    <!-- Modal de Términos y Condiciones -->
+    <q-dialog v-model="showTermsDialog" persistent>
+      <q-card class="terms-modal" style="min-width: 350px; max-width: 600px; max-height: 85vh">
+        <q-card-section class="row items-center q-pb-md bg-grey-10">
+          <div class="text-h6 text-white">Términos y Condiciones</div>
+          <q-space />
+          <q-btn icon="close" flat round dense color="white" @click="cancelTerms" />
+        </q-card-section>
+
+        <q-card-section class="scroll bg-grey-9 text-white" style="max-height: 55vh">
+          <TerminosCondiciones />
+        </q-card-section>
+
+        <q-separator color="grey-7" />
+
+        <q-card-section class="bg-grey-10">
+          <q-checkbox v-model="acceptedTerms" color="white" dark>
+            <template v-slot:default>
+              <span class="text-white">Acepto los términos y condiciones</span>
+            </template>
+          </q-checkbox>
+        </q-card-section>
+
+        <q-card-actions align="right" class="bg-grey-10 q-pt-none">
+          <q-btn flat label="Cancelar" color="grey-6" no-caps @click="cancelTerms" />
+          <q-btn
+            flat
+            label="Aceptar y Continuar"
+            color="white"
+            no-caps
+            :disable="!acceptedTerms"
+            @click="proceedWithRegistration"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-card>
 </template>
 
@@ -161,6 +198,7 @@ import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { Icon } from '@iconify/vue'
 import { ref, onMounted, nextTick } from 'vue'
+import TerminosCondiciones from 'src/components/auth/TerminosCondiciones.vue'
 
 const emit = defineEmits(['toggleForm'])
 
@@ -169,6 +207,10 @@ const password = ref('')
 const username = ref('')
 const confirmPassword = ref('')
 const togglePasswordVisibility = ref(false)
+const showTermsDialog = ref(false)
+const acceptedTerms = ref(false)
+const pendingRegistrationType = ref(null)
+const pendingGoogleCredential = ref(null)
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -181,32 +223,33 @@ onMounted(async () => {
   initializeGoogleSignIn()
 })
 
+// ============= GITHUB =============
+function initiateGithubSignIn() {
+  pendingRegistrationType.value = 'github'
+  showTermsDialog.value = true
+}
+
 function githubSignIn() {
   const clientId = process.env.GITHUB_CLIENT_ID
   const redirectUri = encodeURIComponent(`${window.location.origin}/auth/github/callback`)
   const scope = encodeURIComponent('read:user user:email')
-
   const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`
-
   window.location.href = githubAuthUrl
 }
 
+// ============= GOOGLE =============
 function initializeGoogleSignIn() {
   if (!window.google || googleInitialized) return
 
   try {
-    // Inicializar Google Identity Services
     google.accounts.id.initialize({
       client_id: process.env.GOOGLE_CLIENT_ID,
-      callback: handleGoogleResponse,
+      callback: handleGoogleCallback,
       auto_select: false,
       cancel_on_tap_outside: true,
-      ux_mode: 'popup',
-      use_fedcm_for_prompt: true,
     })
 
-    // Si es móvil, renderizar botón invisible y simular click
-    google.accounts.id.renderButton(document.getElementById('google-signin-button'), {
+    google.accounts.id.renderButton(document.getElementById('google-signin-button-register'), {
       theme: 'outline',
       size: 'large',
       type: 'standard',
@@ -219,11 +262,11 @@ function initializeGoogleSignIn() {
   }
 }
 
-function googleSignIn() {
+function initiateGoogleSignIn() {
   if (!window.google) {
     $q.notify({
       color: 'negative',
-      textColor: 'grey',
+      textColor: 'white',
       icon: 'warning',
       message: 'Google Sign-In no está disponible',
     })
@@ -231,15 +274,11 @@ function googleSignIn() {
   }
 
   try {
-    const googleButton = document.querySelector('#google-signin-button div[role="button"]')
+    const googleButton = document.querySelector('#google-signin-button-register div[role="button"]')
     if (googleButton) {
       googleButton.click()
     } else {
-      google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed()) {
-          fallbackToRedirect()
-        }
-      })
+      google.accounts.id.prompt()
     }
   } catch (error) {
     console.error('Error al iniciar Google Sign-In:', error)
@@ -252,45 +291,46 @@ function googleSignIn() {
   }
 }
 
-function fallbackToRedirect() {
-  // Método alternativo: usar OAuth2 redirect flow
-  const clientId = process.env.GOOGLE_CLIENT_ID
-  const redirectUri = encodeURIComponent(window.location.origin + '/auth/google/callback')
-  const scope = encodeURIComponent('email profile')
-  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}`
-
-  window.location.href = authUrl
+function handleGoogleCallback(response) {
+  // Guardar la credencial y mostrar modal de términos
+  pendingGoogleCredential.value = response.credential
+  pendingRegistrationType.value = 'google'
+  showTermsDialog.value = true
 }
 
-async function handleGoogleResponse(response) {
+async function processGoogleRegistration() {
   try {
-    console.log('Google response received')
-
     $q.loading.show({
       backgroundColor: '#fff',
-      message: 'Iniciando sesión con Google...',
+      message: 'Registrando con Google...',
       messageColor: 'white',
     })
 
-    await authStore.googleLogin(response.credential)
+    await authStore.googleLogin(pendingGoogleCredential.value)
 
     if (authStore.loggedIn) {
       router.push('/main')
     }
   } catch (error) {
-    console.error('Error en handleGoogleResponse:', error)
+    console.error('Error en Google registration:', error)
     $q.notify({
       color: 'negative',
       textColor: 'white',
       icon: 'warning',
-      message: 'Error al iniciar sesión con Google',
+      message: 'Error al registrarse con Google',
     })
   } finally {
     $q.loading.hide()
   }
 }
 
+// ============= EMAIL REGISTRATION =============
 async function handleRegister() {
+  pendingRegistrationType.value = 'email'
+  showTermsDialog.value = true
+}
+
+async function processEmailRegister() {
   try {
     $q.loading.show({
       backgroundColor: '#fff',
@@ -308,23 +348,46 @@ async function handleRegister() {
       return
     }
 
-    try {
-      await authStore.register(email.value, username.value, password.value)
-      router.push('/confirmation')
-    } catch (error) {
-      throw new Error(error.response?.data?.ejecucion?.respuesta?.mensaje || 'Registration failed')
-    }
-
-  } catch (err) {
+    await authStore.register(email.value, username.value, password.value)
+    router.push('/confirmation')
+  } catch (error) {
     $q.notify({
       color: 'white',
       textColor: 'negative',
       icon: 'warning',
-      message: 'Error ' + (err.message || err),
+      message: 'Error: ' + (error.response?.data?.ejecucion?.respuesta?.mensaje || 'Registration failed'),
     })
   } finally {
     $q.loading.hide()
   }
+}
+
+// ============= MODAL TERMS =============
+function cancelTerms() {
+  showTermsDialog.value = false
+  acceptedTerms.value = false
+  pendingRegistrationType.value = null
+  pendingGoogleCredential.value = null
+}
+
+async function proceedWithRegistration() {
+  if (!acceptedTerms.value) return
+
+  showTermsDialog.value = false
+
+  // Ejecutar el registro según el tipo
+  if (pendingRegistrationType.value === 'email') {
+    await processEmailRegister()
+  } else if (pendingRegistrationType.value === 'google') {
+    await processGoogleRegistration()
+  } else if (pendingRegistrationType.value === 'github') {
+    githubSignIn()
+  }
+
+  // Limpiar estado
+  acceptedTerms.value = false
+  pendingRegistrationType.value = null
+  pendingGoogleCredential.value = null
 }
 </script>
 
@@ -353,12 +416,33 @@ async function handleRegister() {
   transform: scale(0.95);
 }
 
-// Responsive adjustments
 @media (max-width: 768px) {
   .border-item {
     width: 60px;
     height: 60px;
     padding: 8px;
   }
+}
+
+.terms-modal {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.terms-modal .q-card__section {
+  color: white;
+}
+
+.terms-modal :deep(.q-checkbox__inner) {
+  color: white;
+}
+
+.terms-modal :deep(.q-checkbox__bg) {
+  border-color: white;
+}
+
+.terms-modal :deep(.q-checkbox__svg) {
+  color: #1a1a1a;
 }
 </style>

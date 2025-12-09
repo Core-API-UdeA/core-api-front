@@ -31,16 +31,16 @@
         <span class="text-h6 text-white">
           {{ title.length > 80 ? title.substring(0, 80) + '...' : title }}
         </span>
-        <span class="text-subtitle1 text-weight-thin text-accentitems row">
+        <span class="text-subtitle1 text-weight-medium text-accentitems row">
           {{ caption?.length > 80 ? caption.substring(0, 80) + '...' : caption }}
         </span>
       </div>
 
       <div class="row justify-between">
-        <span class="text-subtitle1 text-weight-thin text-white">
+        <span class="text-subtitle1 text-weight-medium text-white">
           {{ normalize(owner) }}
         </span>
-        <span class="text-subtitle1 text-weight-thin text-white">
+        <span class="text-subtitle1 text-weight-medium text-white">
           {{ calculateTime(createdAt) }}
         </span>
       </div>
@@ -48,19 +48,19 @@
       <div class="row q-gutter-x-sm">
         <q-badge outline color="accentitems" style="border-radius: 8px" class="badge-item"
           ><q-icon name="download" color="accentitems" size="xs" />
-          <span class="text-subtitle1 text-weight-thin text-accentitems">
+          <span class="text-subtitle1 text-weight-medium text-accentitems">
             {{ views }}
           </span>
         </q-badge>
         <q-badge outline color="accentitems" style="border-radius: 8px" class="badge-item"
           ><q-icon name="eva-star-outline" color="accentitems" size="xs" />
-          <span class="text-subtitle1 text-weight-thin text-accentitems">
+          <span class="text-subtitle1 text-weight-medium text-accentitems">
             {{ ratingAverage }}
           </span>
         </q-badge>
         <q-badge outline color="accentitems" style="border-radius: 8px" class="badge-item"
           ><q-icon name="attach_money" color="accentitems" size="xs" />
-          <span class="text-subtitle1 text-weight-thin text-accentitems">
+          <span class="text-subtitle1 text-weight-medium text-accentitems">
             {{ price }}
           </span>
         </q-badge>

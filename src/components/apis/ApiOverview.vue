@@ -113,7 +113,7 @@
 
     <!-- Resumen corto -->
     <div class="row q-pt-md">
-      <span class="text-subtitle1 text-weight-light text-accentitems">
+      <span class="text-subtitle1 text-weight-medium text-accentitems">
         {{ api.short_summary }}
       </span>
     </div>

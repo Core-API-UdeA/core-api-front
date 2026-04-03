@@ -3,7 +3,8 @@ import { defineStore } from 'pinia'
 import { axiosInstance } from 'boot/axios'
 import { ref, computed } from 'vue'
 
-const RUTA_CREAR_CHECKOUT = '/pagos/crear-checkout'
+const RUTA_CREAR_CHECKOUT    = '/pagos/crear-checkout'
+const RUTA_SUSCRIBIR_GRATIS  = '/pagos/suscribir-gratis'
 const RUTA_VERIFICAR_PAGO = '/pagos/verificar-pago'
 const RUTA_CONSULTAR_TRANSACCION = '/pagos/transaccion'
 const RUTA_MIS_TRANSACCIONES = '/pagos/mis-transacciones'
@@ -99,6 +100,26 @@ export const usePagosStore = defineStore('storePagos', () => {
       }
     } catch (error) {
       console.error('Error al crear checkout:', error)
+      throw error
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Activar plan gratuito sin pasarela de pago
+  async function suscribirGratis(apiId, planId) {
+    loading.value = true
+    try {
+      const response = await axiosInstance.post(RUTA_SUSCRIBIR_GRATIS, { apiId, planId })
+      const ejec = response.data.ejecucion
+      if (ejec.respuesta.estado === 'OK') {
+        await cargarMisSuscripciones()
+        return ejec.data
+      } else {
+        throw new Error(ejec.respuesta.mensaje)
+      }
+    } catch (error) {
+      console.error('Error al suscribir gratis:', error)
       throw error
     } finally {
       loading.value = false
@@ -359,6 +380,7 @@ export const usePagosStore = defineStore('storePagos', () => {
 
     // Actions - Checkout y Pagos
     crearCheckout,
+    suscribirGratis,
     verificarPago,
 
     // Actions - Transacciones

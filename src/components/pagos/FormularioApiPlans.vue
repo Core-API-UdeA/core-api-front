@@ -163,14 +163,14 @@
                   <q-checkbox
                     v-model="formData.is_active"
                     label="Activo"
-                    dark
+                    label-color="white"
                     dense
                     color="primary"
                   />
                   <q-checkbox
                     v-model="formData.is_popular"
                     label="Popular"
-                    dark
+                    label-color="white"
                     dense
                     color="primary"
                   />

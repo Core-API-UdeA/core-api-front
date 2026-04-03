@@ -93,7 +93,7 @@
           class="plan-card"
           :class="{
             'plan-popular': plan.is_popular,
-            'plan-free': plan.price === 0,
+            'plan-free': Number(plan.price) === 0,
           }"
         >
           <!-- Badge Popular -->
@@ -126,7 +126,7 @@
 
             <!-- Plan Price -->
             <div class="plan-price-container">
-              <span v-if="plan.price === 0" class="plan-price-free">Gratis</span>
+              <span v-if="Number(plan.price) === 0" class="plan-price-free">Gratis</span>
               <template v-else>
                 <div class="price-wrapper">
                   <span class="plan-price-currency">$</span>
@@ -246,7 +246,7 @@
             </div>
             <div class="summary-row">
               <span>Precio:</span>
-              <span v-if="selectedPlan?.price === 0" class="text-positive">Gratis</span>
+              <span v-if="Number(selectedPlan?.price) === 0" class="text-positive">Gratis</span>
               <span v-else class="text-weight-bold">
                 ${{ formatPrice(selectedPlan?.price) }}
                 {{ getPeriodLabel(selectedPlan?.billing_cycle) }}
@@ -258,7 +258,7 @@
             </div>
           </div>
 
-          <p v-if="selectedPlan?.price === 0" class="text-grey-5 text-caption q-mt-md">
+          <p v-if="Number(selectedPlan?.price) === 0" class="text-grey-5 text-caption q-mt-md">
             Este es un plan gratuito. Podrás comenzar a usarlo inmediatamente.
           </p>
           <p v-else class="text-grey-5 text-caption q-mt-md">
@@ -269,7 +269,7 @@
         <q-card-actions align="right">
           <q-btn label="Cancelar" flat color="grey-5" no-caps v-close-popup />
           <q-btn
-            :label="selectedPlan?.price === 0 ? 'Activar Plan Gratis' : 'Continuar al pago'"
+            :label="Number(selectedPlan?.price) === 0 ? 'Activar Plan Gratis' : 'Continuar al pago'"
             color="primary"
             no-caps
             unelevated
@@ -408,7 +408,7 @@ function getButtonLabel(plan) {
     return 'Plan Actual'
   }
 
-  if (plan.price === 0) {
+  if (Number(plan.price) === 0) {
     return 'Comenzar Gratis'
   }
 
@@ -416,7 +416,11 @@ function getButtonLabel(plan) {
 }
 
 function isSubscribed(planId) {
-  return props.userSubscriptions?.some((sub) => sub.plan_id === planId && sub.status === 'active')
+  return props.userSubscriptions?.some((sub) => {
+    // plan_id puede ser un objeto populado { id, name, ... } o un UUID string
+    const subPlanId = sub.plan_id?.id ?? sub.plan_id
+    return subPlanId === planId && sub.status === 'active'
+  })
 }
 
 function selectPlan(plan) {
@@ -442,20 +446,30 @@ async function confirmarPlan() {
 
   try {
     // Si el plan es gratuito
-    if (selectedPlan.value.price === 0) {
-      // Cerrar dialog
-      showConfirmDialog.value = false
+    if (Number(selectedPlan.value.price) === 0) {
+      try {
+        const resultado = await pagosStore.suscribirGratis(props.apiId, selectedPlan.value.id)
 
-      $q.notify({
-        type: 'info',
-        message: 'Plan gratuito activado. Próximamente podrás usar esta API.',
-        icon: 'celebration',
-        timeout: 3000,
-      })
+        showConfirmDialog.value = false
 
-      // TODO: Implementar lógica para activar plan gratuito
-      emit('subscription-created', selectedPlan.value)
+        $q.notify({
+          type: 'positive',
+          message: '¡Suscripción activada! Ya puedes empezar a usar esta API.',
+          icon: 'celebration',
+          timeout: 4000,
+        })
 
+        emit('plans-updated')
+        emit('subscription-created', resultado)
+      } catch (error) {
+        const mensaje = error.response?.data?.ejecucion?.respuesta?.mensaje || error.message
+
+        if (mensaje?.toLowerCase().includes('suscripción activa')) {
+          $q.notify({ type: 'warning', message: 'Ya tienes una suscripción activa a esta API.', icon: 'info' })
+        } else {
+          $q.notify({ type: 'negative', message: mensaje || 'Error al activar la suscripción.', icon: 'error' })
+        }
+      }
       return
     }
 

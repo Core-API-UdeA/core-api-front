@@ -43,7 +43,6 @@
               <q-btn label="Volver al Paso 1" color="primary" no-caps @click="step = 1" />
             </div>
 
-            <!-- Botones de navegación en Step 2 -->
             <div v-if="apiCreatedId" class="row justify-end q-gutter-sm q-mt-lg">
               <q-btn
                 label="Saltar este paso"
@@ -53,7 +52,7 @@
                 @click="stepper.next()"
                 :disable="loading"
               >
-                <q-tooltip class="bg-grey-8"> Puedes agregar endpoints más tarde </q-tooltip>
+                <q-tooltip class="bg-grey-8">Puedes agregar endpoints más tarde</q-tooltip>
               </q-btn>
               <q-btn
                 label="Continuar a Planes"
@@ -83,30 +82,54 @@
               <q-btn label="Volver al Paso 1" color="primary" no-caps @click="step = 1" />
             </div>
 
-            <!-- Botones de finalización en Step 3 -->
             <div v-if="apiCreatedId" class="row justify-end q-gutter-sm q-mt-lg">
               <q-btn
                 label="Saltar este paso"
                 flat
                 color="grey-5"
                 no-caps
-                @click="finalizarRegistro"
+                @click="stepper.next()"
                 :disable="loading"
               >
-                <q-tooltip class="bg-grey-8"> Puedes agregar planes más tarde </q-tooltip>
+                <q-tooltip class="bg-grey-8">Puedes agregar planes más tarde</q-tooltip>
               </q-btn>
               <q-btn
-                label="Finalizar e ir al Overview"
+                label="Continuar a Conexión"
                 color="primary"
                 no-caps
                 icon-right="arrow_forward"
-                @click="finalizarRegistro"
-                :loading="loading"
+                @click="stepper.next()"
                 :disable="loading"
               />
             </div>
           </div>
         </q-step>
+
+        <!-- Step 4: Conexión con API -->
+        <q-step
+          :name="4"
+          title="Conexion con API"
+          icon="sync_alt"
+          :done="step > 4"
+          class="step-content"
+        >
+          <div class="step-wrapper">
+            <ConexionApi
+              v-if="apiCreatedId"
+              ref="conexionComponent"
+              :api-id="apiCreatedId"
+              @success="handleConexionSuccess"
+              @cancel="handleCancel"
+              @skip="finalizarRegistro"
+            />
+            <div v-else class="text-center q-pa-xl">
+              <q-icon name="warning" size="48px" color="warning" />
+              <p class="text-white q-mt-md">Debes completar el Paso 1 primero para continuar</p>
+              <q-btn label="Volver al Paso 1" color="primary" no-caps @click="step = 1" />
+            </div>
+          </div>
+        </q-step>
+
       </q-stepper>
     </div>
   </div>
@@ -117,84 +140,77 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import RegistrarApiOverview from 'src/components/apis/FormularioApiOverview.vue'
-import RegistrarEndpoints from 'src/components/apis/FormularioApiDocumentation.vue'
-import RegistrarPlanes from 'src/components/pagos/FormularioApiPlans.vue'
+import RegistrarEndpoints   from 'src/components/apis/FormularioApiDocumentation.vue'
+import RegistrarPlanes      from 'src/components/pagos/FormularioApiPlans.vue'
+import ConexionApi          from 'src/components/apis/FormularioConexionApi.vue'
 
 const router = useRouter()
-const $q = useQuasar()
+const $q     = useQuasar()
 
-const step = ref(1)
-const stepper = ref(null)
+const step              = ref(1)
+const stepper           = ref(null)
 const overviewComponent = ref(null)
 const endpointsComponent = ref(null)
-const plansComponent = ref(null)
-const apiCreatedId = ref(null)
-const loading = ref(false)
+const plansComponent    = ref(null)
+const conexionComponent = ref(null)
+const apiCreatedId      = ref(null)
+const loading           = ref(false)
 
 function handleOverviewSuccess(apiId) {
   apiCreatedId.value = apiId
 
   $q.notify({
-    type: 'positive',
-    message: 'Información general guardada. Puedes continuar con los endpoints.',
-    icon: 'check_circle',
+    type:     'positive',
+    message:  'Información general guardada. Puedes continuar con los endpoints.',
+    icon:     'check_circle',
     position: 'top',
   })
 
-  // Avanzar al siguiente paso automáticamente
-  setTimeout(() => {
-    stepper.value.next()
-  }, 500)
+  setTimeout(() => { stepper.value.next() }, 500)
 }
 
 function handleEndpointsSuccess() {
   $q.notify({
-    type: 'positive',
-    message: 'Documentación de endpoints guardada exitosamente.',
-    icon: 'check_circle',
+    type:     'positive',
+    message:  'Documentación de endpoints guardada exitosamente.',
+    icon:     'check_circle',
     position: 'top',
   })
 
-  // Avanzar al paso de planes
-  setTimeout(() => {
-    stepper.value.next()
-  }, 500)
+  setTimeout(() => { stepper.value.next() }, 500)
 }
 
 function handlePlansSuccess() {
   $q.notify({
-    type: 'positive',
-    message: 'Plan guardado exitosamente.',
-    icon: 'check_circle',
+    type:     'positive',
+    message:  'Plan guardado exitosamente.',
+    icon:     'check_circle',
+    position: 'top',
+  })
+}
+
+function handleConexionSuccess(resultado) {
+  const estaActiva = resultado?.status === 'active'
+
+  $q.notify({
+    type:     estaActiva ? 'positive' : 'warning',
+    message:  estaActiva
+      ? '¡API registrada y conectada correctamente!'
+      : 'Conexión guardada. Verifica las credenciales si el test falló.',
+    icon:     estaActiva ? 'celebration' : 'warning',
     position: 'top',
   })
 
-  // Mostrar notificación adicional
-  setTimeout(() => {
-    $q.notify({
-      type: 'info',
-      message: 'Puedes agregar más planes o finalizar el registro',
-      icon: 'info',
-      position: 'top',
-      timeout: 3000,
-    })
-  }, 800)
+  finalizarRegistro()
 }
 
 function handleCancel() {
   $q.dialog({
-    title: 'Cancelar registro',
+    title:   'Cancelar registro',
     message: '¿Estás seguro de que deseas cancelar el registro de la API?',
-    dark: true,
-    cancel: {
-      label: 'No',
-      flat: true,
-      color: 'grey-5',
-    },
-    ok: {
-      label: 'Sí, cancelar',
-      color: 'negative',
-    },
+    dark:    true,
+    cancel: { label: 'No',          flat: true, color: 'grey-5' },
+    ok:     { label: 'Sí, cancelar', color: 'negative' },
   }).onOk(() => {
     router.push('/main/apis')
   })
@@ -202,27 +218,22 @@ function handleCancel() {
 
 function finalizarRegistro() {
   if (!apiCreatedId.value) {
-    $q.notify({
-      type: 'warning',
-      message: 'Por favor completa el paso 1 primero',
-      icon: 'warning',
-    })
+    $q.notify({ type: 'warning', message: 'Por favor completa el paso 1 primero', icon: 'warning' })
     step.value = 1
     return
   }
 
   loading.value = true
 
-  // Codificar el ID en base64
   const encodedId = btoa(apiCreatedId.value)
 
   $q.notify({
-    type: 'positive',
-    message: 'API registrada exitosamente. Redirigiendo...',
-    icon: 'celebration',
+    type:     'positive',
+    message:  'API registrada exitosamente. Redirigiendo...',
+    icon:     'celebration',
+    position: 'top',
   })
 
-  // Esperar un momento antes de redirigir para mostrar la notificación
   setTimeout(() => {
     loading.value = false
     router.push(`/main/detalle-api/${encodedId}`)
@@ -277,17 +288,10 @@ function finalizarRegistro() {
 }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-// Responsive
 @media (max-width: 768px) {
   .page-container {
     padding: 20px 10px;

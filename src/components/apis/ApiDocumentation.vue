@@ -85,6 +85,48 @@
         <p class="text-grey-6">No parameters</p>
       </div>
 
+      <!-- Headers requeridos -->
+      <div v-if="selectedEndpoint.headers && selectedEndpoint.headers.length > 0" class="q-mb-lg">
+        <h4 class="detail-title">Headers requeridos</h4>
+        <div class="parameters-list">
+          <div v-for="header in selectedEndpoint.headers" :key="header.name" class="parameter-item header-item">
+            <div class="param-header">
+              <q-icon name="label" color="primary" size="xs" class="q-mr-xs" />
+              <span class="param-name">{{ header.name }}</span>
+              <q-badge :label="header.type" color="primary" class="param-type-badge" />
+              <q-badge v-if="header.required" label="Required" color="negative" class="param-required-badge" />
+            </div>
+            <p v-if="header.description" class="param-description">{{ header.description }}</p>
+            <div v-if="header.example" class="header-example">
+              <span class="text-grey-6 text-caption">Ejemplo: </span>
+              <code class="example-code">{{ header.example }}</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flujo de autenticación -->
+      <div v-if="selectedEndpoint.is_auth_endpoint || selectedEndpoint.auth_notes || selectedEndpoint.requires_token_from" class="q-mb-lg">
+        <h4 class="detail-title">Autenticación</h4>
+
+        <div v-if="selectedEndpoint.is_auth_endpoint" class="auth-badge q-mb-sm">
+          <q-icon name="key" color="positive" size="xs" class="q-mr-xs" />
+          <span class="text-positive text-caption text-weight-medium">Este endpoint genera un token de autenticación</span>
+        </div>
+
+        <div v-if="selectedEndpoint.requires_token_from" class="auth-dependency q-mb-sm">
+          <q-icon name="link" color="warning" size="xs" class="q-mr-xs" />
+          <span class="text-warning text-caption">Requiere token de: </span>
+          <code class="example-code">{{ endpointNameById(selectedEndpoint.requires_token_from) }}</code>
+        </div>
+
+        <div v-if="selectedEndpoint.auth_notes" class="auth-notes">
+          <q-icon name="info" color="primary" size="xs" class="q-mr-xs" />
+          <span class="text-grey-4 text-caption text-weight-medium q-mb-xs" style="display:block; margin-left:20px">Flujo de autenticación</span>
+          <pre class="auth-notes-text">{{ selectedEndpoint.auth_notes }}</pre>
+        </div>
+      </div>
+
       <!-- Body -->
       <div v-if="selectedEndpoint.body.length > 0" class="q-mb-lg">
         <h4 class="detail-title">Request Body</h4>
@@ -259,6 +301,11 @@ function getResponseCode(index) {
 function formatJSON(obj) {
   if (!obj) return 'null'
   return JSON.stringify(obj, null, 2)
+}
+
+function endpointNameById(id) {
+  const ep = documentation.value.find(e => e.id === id || e.tempId === id)
+  return ep ? `${ep.method} ${ep.path}` : id
 }
 
 function editarDocumentacion() {
@@ -512,6 +559,48 @@ async function handleDocumentationUpdated() {
     color: #b0b0b0;
     font-size: 13px;
   }
+}
+
+.header-item {
+  border-left: 3px solid rgba(0, 168, 168, 0.4);
+}
+
+.header-example {
+  margin-top: 6px;
+}
+
+.example-code {
+  background: #252525;
+  color: #00a8a8;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.auth-badge,
+.auth-dependency {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.auth-notes {
+  background: rgba(0, 168, 168, 0.04);
+  border: 1px solid rgba(0, 168, 168, 0.15);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.auth-notes-text {
+  margin: 6px 0 0 20px;
+  color: #b0b0b0;
+  font-size: 13px;
+  font-family: inherit;
+  line-height: 1.7;
+  white-space: pre-wrap;
 }
 
 // Skeleton Styles

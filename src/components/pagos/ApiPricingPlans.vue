@@ -1,7 +1,7 @@
 <template>
   <div class="pricing-container">
     <!-- Certification Badge -->
-    <div class="certification-banner">
+    <div v-if="connectionStatus === 'active'" class="certification-banner">
       <div class="certification-content">
         <div class="certification-icon">
           <q-icon name="verified" size="24px" />
@@ -328,6 +328,11 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  // Estado de la conexión con el proveedor: 'active' | 'failed' | 'pending' | null
+  connectionStatus: {
+    type: String,
+    default: null,
+  },
 })
 
 const emit = defineEmits(['plan-selected', 'subscription-created', 'plans-updated'])
@@ -465,9 +470,17 @@ async function confirmarPlan() {
         const mensaje = error.response?.data?.ejecucion?.respuesta?.mensaje || error.message
 
         if (mensaje?.toLowerCase().includes('suscripción activa')) {
-          $q.notify({ type: 'warning', message: 'Ya tienes una suscripción activa a esta API.', icon: 'info' })
+          $q.notify({
+            type: 'warning',
+            message: 'Ya tienes una suscripción activa a esta API.',
+            icon: 'info',
+          })
         } else {
-          $q.notify({ type: 'negative', message: mensaje || 'Error al activar la suscripción.', icon: 'error' })
+          $q.notify({
+            type: 'negative',
+            message: mensaje || 'Error al activar la suscripción.',
+            icon: 'error',
+          })
         }
       }
       return

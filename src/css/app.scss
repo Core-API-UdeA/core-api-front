@@ -1,0 +1,60 @@
+// ─── Fixes globales para tipografía sobre fondo oscuro ──────────────────────
+// Los Quasar inputs/selects en modo dark a veces aplican grises muy oscuros
+// a los labels/hints. Forzamos colores legibles.
+
+.q-field--dark {
+  .q-field__label {
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  .q-field__messages {
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  .q-field__counter {
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  .q-field__native,
+  .q-field__input {
+    color: #ffffff;
+  }
+
+  // Placeholders un poco más visibles
+  .q-field__native::placeholder,
+  .q-field__input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  // Cuando está enfocado, el label también se ilumina
+  &.q-field--focused .q-field__label {
+    color: #00d4d4;
+  }
+}
+
+// Labels de q-checkbox / q-radio sobre fondo oscuro
+.q-checkbox--dark .q-checkbox__label,
+.q-radio--dark .q-radio__label,
+.q-toggle--dark .q-toggle__label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+// text-grey-7 sobre fondo oscuro queda casi invisible.
+// Lo subimos a un gris más claro pero aún sutil.
+.bg-bgpage .text-grey-7,
+.bg-dark .text-grey-7,
+body.body--dark .text-grey-7 {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.bg-bgpage .text-grey-8,
+.bg-dark .text-grey-8,
+body.body--dark .text-grey-8 {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.bg-bgpage .text-grey-9,
+.bg-dark .text-grey-9,
+body.body--dark .text-grey-9 {
+  color: rgba(255, 255, 255, 0.45) !important;
+}

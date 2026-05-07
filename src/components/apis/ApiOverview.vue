@@ -1,4 +1,3 @@
-
 <template>
   <!-- Contenido cargado -->
   <div v-if="apiCargada">
@@ -42,6 +41,64 @@
           <span class="text-white q-py-xs" style="font-size: 1vmax">{{ api.price }}</span>
         </q-badge>
 
+        <!-- Badge "API segura" - solo si la conexión está active -->
+        <q-badge
+          v-if="api.connection && api.connection.status === 'active'"
+          unelevated
+          class="secure-badge"
+          style="border-radius: 8px"
+        >
+          <q-icon name="verified_user" color="white" size="sm" class="q-mr-xs" />
+          <span class="text-white q-py-xs q-pr-xs" style="font-size: 0.85vmax; font-weight: 600">
+            API segura
+          </span>
+          <q-tooltip class="bg-dark text-white" anchor="bottom middle" self="top middle">
+            <div class="text-caption">
+              <div class="text-positive text-weight-bold q-mb-xs">✓ Conexión verificada</div>
+              <div>El gateway de CoreAPI valida activamente esta API.</div>
+              <div v-if="api.connection.last_checked_at" class="text-grey-5 q-mt-xs">
+                Última verificación: {{ formatearFechaCorta(api.connection.last_checked_at) }}
+              </div>
+              <div v-if="api.connection.last_check_latency_ms" class="text-grey-5">
+                Latencia: {{ api.connection.last_check_latency_ms }}ms
+              </div>
+            </div>
+          </q-tooltip>
+        </q-badge>
+
+        <!-- Badge "Conexión pendiente" o "Falló" para el owner únicamente -->
+        <q-badge
+          v-else-if="isOwner && api.connection && api.connection.status === 'failed'"
+          unelevated
+          color="negative"
+          style="border-radius: 8px"
+        >
+          <q-icon name="error_outline" color="white" size="sm" class="q-mr-xs" />
+          <span class="text-white q-py-xs q-pr-xs" style="font-size: 0.85vmax">
+            Conexión falló
+          </span>
+          <q-tooltip class="bg-dark text-white">
+            Revisa la configuración de conexión en la pestaña "Conection".
+          </q-tooltip>
+        </q-badge>
+
+        <q-badge
+          v-else-if="isOwner && (!api.connection || api.connection.status === 'pending')"
+          unelevated
+          color="warning"
+          style="border-radius: 8px"
+        >
+          <q-icon name="schedule" color="dark" size="sm" class="q-mr-xs" />
+          <span class="text-dark q-py-xs q-pr-xs" style="font-size: 0.85vmax"> Sin verificar </span>
+          <q-tooltip class="bg-dark text-white">
+            {{
+              api.connection
+                ? 'La conexión aún no se ha verificado.'
+                : 'Configura la conexión para que tu API aparezca como segura.'
+            }}
+          </q-tooltip>
+        </q-badge>
+
         <!-- Rating Interactivo -->
         <div class="row items-center q-gutter-xs rating-container">
           <q-icon
@@ -56,9 +113,7 @@
             @mouseenter="!alreadyRated && (hoverRating = n)"
             @mouseleave="!alreadyRated && (hoverRating = 0)"
           />
-          <span class="text-white text-caption q-ml-xs">
-            ({{ api.rating_average }})
-          </span>
+          <span class="text-white text-caption q-ml-xs"> ({{ api.rating_average }}) </span>
 
           <!-- Tooltip informativo -->
           <q-tooltip
@@ -73,27 +128,14 @@
                 : 'Haz clic para calificar'
             }}
           </q-tooltip>
-          <q-tooltip
-            v-else
-            class="bg-grey-8 text-white"
-            anchor="bottom middle"
-            self="top middle"
-          >
+          <q-tooltip v-else class="bg-grey-8 text-white" anchor="bottom middle" self="top middle">
             Ya has calificado con {{ userRating }} estrella{{ userRating !== 1 ? 's' : '' }}
           </q-tooltip>
         </div>
 
         <!-- Botones de edición (solo para el owner) -->
         <div v-if="isOwner" class="row q-gutter-xs">
-          <q-btn
-            flat
-            dense
-            round
-            icon="edit"
-            color="primary"
-            size="sm"
-            @click="editarOverview"
-          >
+          <q-btn flat dense round icon="edit" color="primary" size="sm" @click="editarOverview">
             <q-tooltip class="bg-primary">Editar información general</q-tooltip>
           </q-btn>
         </div>
@@ -246,8 +288,6 @@
       </q-card-section>
     </q-card>
   </q-dialog>
-
-
 </template>
 
 <script setup>
@@ -344,6 +384,19 @@ function getStarIcon(position) {
   }
 }
 
+function formatearFechaCorta(iso) {
+  try {
+    return new Date(iso).toLocaleString('es-CO', {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  } catch {
+    return iso
+  }
+}
+
 function getStarColor(position) {
   if (alreadyRated.value) {
     return position <= userRating.value ? 'yellow-7' : 'grey-5'
@@ -365,7 +418,7 @@ function getStarColor(position) {
 }
 
 const parsedStack = computed(() =>
-  api.value.technology_stack ? api.value.technology_stack.split(',').map((t) => t.trim()) : []
+  api.value.technology_stack ? api.value.technology_stack.split(',').map((t) => t.trim()) : [],
 )
 
 const renderedMarkdown = computed(() => {
@@ -832,6 +885,17 @@ async function handleOverviewUpdated() {
         font-size: 13px;
       }
     }
+  }
+}
+
+.secure-badge {
+  background: linear-gradient(135deg, #00a8a8 0%, #00d4aa 100%);
+  box-shadow: 0 2px 8px rgba(0, 168, 168, 0.4);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 168, 168, 0.6);
   }
 }
 </style>

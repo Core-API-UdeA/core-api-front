@@ -2,17 +2,15 @@
   <div class="conexion-container">
     <q-card flat class="conexion-card">
       <q-card-section class="q-pb-none">
-        <div class="text-h5 text-white text-weight-medium q-mb-xs">
-          Conexión con tu API
-        </div>
+        <div class="text-h5 text-white text-weight-medium q-mb-xs">Conexión con tu API</div>
         <div class="text-caption text-grey-5 q-mb-md">
-          Configura cómo CoreAPI se conectará a tu servicio. Las credenciales se cifran con AES-256 antes de guardarse.
+          Configura cómo CoreAPI se conectará a tu servicio. Las credenciales se cifran con AES-256
+          antes de guardarse.
         </div>
       </q-card-section>
 
       <q-card-section>
         <q-form @submit.prevent="onSubmit" class="q-col-gutter-md row">
-
           <!-- Base URL -->
           <div class="col-md-8 col-sm-12 col-xs-12">
             <q-input
@@ -25,8 +23,9 @@
               bg-color="dark"
               placeholder="https://example.com"
               :rules="[
-                val => !!val || 'La URL base es requerida',
-                val => /^https?:\/\/.+/.test(val) || 'Debe ser una URL válida (http:// o https://)'
+                (val) => !!val || 'La URL base es requerida',
+                (val) =>
+                  /^https?:\/\/.+/.test(val) || 'Debe ser una URL válida (http:// o https://)',
               ]"
               maxlength="500"
               class="custom-input"
@@ -130,7 +129,13 @@
           </div>
 
           <!-- Endpoint de prueba -->
-          <div :class="formData.authType === 'api_key' ? 'col-md-6 col-sm-12 col-xs-12' : 'col-md-12 col-sm-12 col-xs-12'">
+          <div
+            :class="
+              formData.authType === 'api_key'
+                ? 'col-md-6 col-sm-12 col-xs-12'
+                : 'col-md-12 col-sm-12 col-xs-12'
+            "
+          >
             <q-input
               v-model="formData.healthCheckEndpoint"
               label="Endpoint de prueba"
@@ -246,15 +251,9 @@
                 {{ resultadoTest.ok ? 'Conexión exitosa' : 'Conexión fallida' }}
               </div>
               <div class="text-caption q-mt-xs">
-                <span v-if="resultadoTest.statusCode">
-                  HTTP {{ resultadoTest.statusCode }} ·
-                </span>
-                <span v-if="resultadoTest.latencyMs">
-                  {{ resultadoTest.latencyMs }}ms
-                </span>
-                <span v-if="resultadoTest.error">
-                  · {{ resultadoTest.error }}
-                </span>
+                <span v-if="resultadoTest.statusCode"> HTTP {{ resultadoTest.statusCode }} · </span>
+                <span v-if="resultadoTest.latencyMs"> {{ resultadoTest.latencyMs }}ms </span>
+                <span v-if="resultadoTest.error"> · {{ resultadoTest.error }} </span>
               </div>
             </q-banner>
           </div>
@@ -273,6 +272,7 @@
                   class="cancel-btn"
                 />
                 <q-btn
+                  v-if="!modoEdicion"
                   label="Omitir este paso"
                   flat
                   color="grey-5"
@@ -303,7 +303,7 @@
                 </q-btn>
 
                 <q-btn
-                  label="Guardar conexión"
+                  :label="modoEdicion ? 'Actualizar conexión' : 'Guardar conexión'"
                   type="submit"
                   color="primary"
                   no-caps
@@ -318,7 +318,6 @@
               </div>
             </div>
           </div>
-
         </q-form>
       </q-card-section>
     </q-card>
@@ -326,7 +325,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useGatewayStore } from 'stores/gateway-store.js'
 
@@ -335,6 +334,14 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  datosIniciales: {
+    type: Object,
+    default: null,
+  },
+  modoEdicion: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(['success', 'cancel', 'skip'])
@@ -342,32 +349,55 @@ const emit = defineEmits(['success', 'cancel', 'skip'])
 const $q = useQuasar()
 const gatewayStore = useGatewayStore()
 
-const loading     = ref(false)
+const loading = ref(false)
 const loadingTest = ref(false)
 const mostrarCredencial = ref(false)
-const resultadoTest     = ref(null)
+const resultadoTest = ref(null)
 const headersAdicionales = ref([])
 
 const formData = ref({
-  baseUrl:             '',
-  authType:            'bearer',
-  credential:          '',
-  apiKeyHeaderName:    'X-Api-Key',
+  baseUrl: '',
+  authType: 'bearer',
+  credential: '',
+  apiKeyHeaderName: 'X-Api-Key',
   healthCheckEndpoint: '/',
-  healthCheckMethod:   'GET',
+  healthCheckMethod: 'GET',
 })
+
+function aplicarDatosIniciales(datos) {
+  if (!datos) return
+  formData.value = {
+    baseUrl: datos.base_url || '',
+    authType: datos.auth_type || 'bearer',
+    credential: '',
+    apiKeyHeaderName: datos.api_key_header_name || 'X-Api-Key',
+    healthCheckEndpoint: datos.health_check_endpoint || '/',
+    healthCheckMethod: datos.health_check_method || 'GET',
+  }
+}
+
+onMounted(() => {
+  aplicarDatosIniciales(props.datosIniciales)
+})
+
+watch(
+  () => props.datosIniciales,
+  (nuevos) => {
+    aplicarDatosIniciales(nuevos)
+  },
+)
 
 // ─── Opciones ─────────────────────────────────────────────────────────────────
 
 const tiposAuth = [
   { label: 'Bearer Token', value: 'bearer' },
-  { label: 'API Key',      value: 'api_key' },
-  { label: 'OAuth2',       value: 'oauth2' },
-  { label: 'Sin auth',     value: 'none' },
+  { label: 'API Key', value: 'api_key' },
+  { label: 'OAuth2', value: 'oauth2' },
+  { label: 'Sin auth', value: 'none' },
 ]
 
 const metodosHttp = [
-  { label: 'GET',  value: 'GET' },
+  { label: 'GET', value: 'GET' },
   { label: 'POST', value: 'POST' },
   { label: 'HEAD', value: 'HEAD' },
 ]
@@ -376,10 +406,10 @@ const metodosHttp = [
 
 const labelCredencial = computed(() => {
   const labels = {
-    bearer:  'Token / Bearer Token *',
+    bearer: 'Token / Bearer Token *',
     api_key: 'API Key *',
-    oauth2:  'Access Token *',
-    none:    'Sin credencial',
+    oauth2: 'Access Token *',
+    none: 'Sin credencial',
   }
   return labels[formData.value.authType] || 'Token / APIKey *'
 })
@@ -412,29 +442,29 @@ async function onTestConnection() {
 
   try {
     const resultado = await gatewayStore.verificarConexion({
-      baseUrl:             formData.value.baseUrl,
-      authType:            formData.value.authType,
-      credential:          formData.value.credential || null,
-      apiKeyHeaderName:    formData.value.apiKeyHeaderName,
+      baseUrl: formData.value.baseUrl,
+      authType: formData.value.authType,
+      credential: formData.value.credential || null,
+      apiKeyHeaderName: formData.value.apiKeyHeaderName,
       healthCheckEndpoint: formData.value.healthCheckEndpoint,
-      healthCheckMethod:   formData.value.healthCheckMethod,
+      healthCheckMethod: formData.value.healthCheckMethod,
     })
 
     resultadoTest.value = resultado
 
     $q.notify({
-      type:    resultado.ok ? 'positive' : 'warning',
+      type: resultado.ok ? 'positive' : 'warning',
       message: resultado.ok
         ? `Conexión exitosa · HTTP ${resultado.statusCode} · ${resultado.latencyMs}ms`
         : `Conexión fallida · ${resultado.error || `HTTP ${resultado.statusCode}`}`,
-      icon:    resultado.ok ? 'check_circle' : 'warning',
+      icon: resultado.ok ? 'check_circle' : 'warning',
       position: 'top',
     })
   } catch (error) {
     $q.notify({
-      type:    'negative',
+      type: 'negative',
       message: error.message || 'Error al verificar la conexión.',
-      icon:    'error',
+      icon: 'error',
       position: 'top',
     })
   } finally {
@@ -447,22 +477,22 @@ async function onSubmit() {
 
   try {
     const resultado = await gatewayStore.registrarConexion(props.apiId, {
-      baseUrl:             formData.value.baseUrl,
-      authType:            formData.value.authType,
-      credential:          formData.value.credential || null,
-      apiKeyHeaderName:    formData.value.apiKeyHeaderName,
+      baseUrl: formData.value.baseUrl,
+      authType: formData.value.authType,
+      credential: formData.value.credential || null,
+      apiKeyHeaderName: formData.value.apiKeyHeaderName,
       healthCheckEndpoint: formData.value.healthCheckEndpoint,
-      healthCheckMethod:   formData.value.healthCheckMethod,
+      healthCheckMethod: formData.value.healthCheckMethod,
     })
 
     const estaActiva = resultado.status === 'active'
 
     $q.notify({
-      type:    estaActiva ? 'positive' : 'warning',
+      type: estaActiva ? 'positive' : 'warning',
       message: estaActiva
         ? 'Conexión guardada y verificada correctamente. Tu API está activa en el gateway.'
         : 'Conexión guardada pero la verificación falló. Revisa la URL y las credenciales.',
-      icon:    estaActiva ? 'celebration' : 'warning',
+      icon: estaActiva ? 'celebration' : 'warning',
       position: 'top',
       timeout: 4000,
     })
@@ -471,9 +501,9 @@ async function onSubmit() {
     resetForm()
   } catch (error) {
     $q.notify({
-      type:    'negative',
+      type: 'negative',
       message: error.message || 'Error al guardar la conexión. Intenta nuevamente.',
-      icon:    'error',
+      icon: 'error',
       position: 'top',
     })
   } finally {
@@ -492,16 +522,16 @@ function onSkip() {
 
 function resetForm() {
   formData.value = {
-    baseUrl:             '',
-    authType:            'bearer',
-    credential:          '',
-    apiKeyHeaderName:    'X-Api-Key',
+    baseUrl: '',
+    authType: 'bearer',
+    credential: '',
+    apiKeyHeaderName: 'X-Api-Key',
     healthCheckEndpoint: '/',
-    healthCheckMethod:   'GET',
+    healthCheckMethod: 'GET',
   }
   headersAdicionales.value = []
-  resultadoTest.value      = null
-  mostrarCredencial.value  = false
+  resultadoTest.value = null
+  mostrarCredencial.value = false
 }
 
 defineExpose({ resetForm })

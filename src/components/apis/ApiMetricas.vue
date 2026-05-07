@@ -275,7 +275,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useQuasar } from 'quasar'
 import { useGatewayStore } from 'stores/gateway-store.js'
 
@@ -301,9 +301,19 @@ const COLORES = ['#00a8a8', '#e88b23', '#7c4dff', '#e040fb', '#26c6da']
 
 // ─── Lifecycle ────────────────────────────────────────────────────────────────
 
+
+let observerRequests = null
+let observerLatencia = null
+
 onMounted(async () => {
   await recargarMetricas()
 })
+
+onUnmounted(() => {
+  observerRequests?.disconnect()
+  observerLatencia?.disconnect()
+})
+
 
 // ─── Métodos ──────────────────────────────────────────────────────────────────
 
@@ -314,12 +324,48 @@ async function recargarMetricas() {
   try {
     metricas.value = await gatewayStore.cargarMetricas(props.apiId, diasAtras.value)
     await nextTick()
+    // Primer intento inmediato
     dibujarGraficos()
+    // Segundo intento tras 150ms — cuando Quasar termina de calcular columnas
+    setTimeout(dibujarGraficos, 150)
+    // ResizeObserver por si el panel cambia de tamaño después
+    configurarObservers()
   } catch (err) {
     error.value = err.message || 'Error al cargar las métricas.'
     $q.notify({ type: 'negative', message: error.value, icon: 'error', position: 'top' })
   } finally {
     cargando.value = false
+  }
+}
+
+function configurarObservers() {
+  observerRequests?.disconnect()
+  observerLatencia?.disconnect()
+
+  if (chartRequestsRef.value) {
+    observerRequests = new ResizeObserver(() => {
+      if (!metricas.value) return
+      dibujarLineChart(
+        chartRequestsRef.value,
+        metricas.value.graficos.requestsPorDia,
+        'total',
+        '#00a8a8',
+      )
+    })
+    observerRequests.observe(chartRequestsRef.value)
+  }
+
+  if (chartLatenciaRef.value) {
+    observerLatencia = new ResizeObserver(() => {
+      if (!metricas.value) return
+      dibujarLineChart(
+        chartLatenciaRef.value,
+        metricas.value.graficos.latenciaPorDia,
+        'latenciaPromedio',
+        '#e88b23',
+      )
+    })
+    observerLatencia.observe(chartLatenciaRef.value)
   }
 }
 
@@ -359,7 +405,8 @@ function dibujarLineChart(container, datos, campoY, color) {
   const rangoX   = W - PL - PR
   const rangoY   = H - PT - PB
 
-  const xPos = (i) => PL + (i / (datos.length - 1 || 1)) * rangoX
+  const step = datos.length > 1 ? datos.length - 1 : 1
+  const xPos = (i) => PL + (i / step) * rangoX
   const yPos = (v) => PT + rangoY - ((v - minVal) / (maxVal - minVal || 1)) * rangoY
 
   // Puntos de la línea

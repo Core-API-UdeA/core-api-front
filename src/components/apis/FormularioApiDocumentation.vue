@@ -54,16 +54,18 @@
           </div>
         </div>
 
-        <!-- Botón agregar endpoint -->
-        <q-btn
-          color="primary"
-          icon="add"
-          label="Agregar Endpoint"
-          no-caps
-          outline
-          class="q-mb-md"
-          @click="agregarEndpoint"
-        />
+        <!-- Botones de acción: IA + manual -->
+        <div class="row q-gutter-sm q-mb-md">
+          <GeneradorIADocumentacion @endpoints-generados="onEndpointsGenerados" />
+          <q-btn
+            color="primary"
+            icon="add"
+            label="Agregar Endpoint"
+            no-caps
+            outline
+            @click="agregarEndpoint"
+          />
+        </div>
       </q-card-section>
 
       <q-card-section>
@@ -173,10 +175,10 @@
                 align="left"
               >
                 <q-tab name="parameters" label="Parameters" />
-                <q-tab name="headers"    label="Headers" />
-                <q-tab name="auth"       label="Auth" />
-                <q-tab name="body"       label="Request Body" />
-                <q-tab name="responses"  label="Responses" />
+                <q-tab name="headers" label="Headers" />
+                <q-tab name="auth" label="Auth" />
+                <q-tab name="body" label="Request Body" />
+                <q-tab name="responses" label="Responses" />
               </q-tabs>
 
               <q-separator dark />
@@ -277,34 +279,101 @@
                     <div class="row items-center justify-between q-mb-sm">
                       <div>
                         <span class="text-white text-weight-medium">Headers requeridos</span>
-                        <span class="text-grey-6 text-caption q-ml-sm">Headers HTTP que el consumidor debe enviar</span>
+                        <span class="text-grey-6 text-caption q-ml-sm"
+                          >Headers HTTP que el consumidor debe enviar</span
+                        >
                       </div>
-                      <q-btn color="primary" icon="add" label="Agregar" size="sm" no-caps flat dense @click="agregarHeader(index)" />
+                      <q-btn
+                        color="primary"
+                        icon="add"
+                        label="Agregar"
+                        size="sm"
+                        no-caps
+                        flat
+                        dense
+                        @click="agregarHeader(index)"
+                      />
                     </div>
 
-                    <div v-for="(header, hIndex) in endpoint.headers" :key="hIndex" class="parameter-row q-mb-sm">
+                    <div
+                      v-for="(header, hIndex) in endpoint.headers"
+                      :key="hIndex"
+                      class="parameter-row q-mb-sm"
+                    >
                       <div class="row q-col-gutter-sm">
                         <div class="col-12 col-sm-3">
-                          <q-input v-model="header.name" label="Nombre" outlined dense dark bg-color="dark" placeholder="x-firma, x-fecha, x-token" />
+                          <q-input
+                            v-model="header.name"
+                            label="Nombre"
+                            outlined
+                            dense
+                            dark
+                            bg-color="dark"
+                            placeholder="x-firma, x-fecha, x-token"
+                          />
                         </div>
                         <div class="col-12 col-sm-2">
-                          <q-select v-model="header.type" label="Tipo" outlined dense dark bg-color="dark" :options="tiposParametro" emit-value map-options />
+                          <q-select
+                            v-model="header.type"
+                            label="Tipo"
+                            outlined
+                            dense
+                            dark
+                            bg-color="dark"
+                            :options="tiposParametro"
+                            emit-value
+                            map-options
+                          />
                         </div>
                         <div class="col-12 col-sm-3">
-                          <q-input v-model="header.example" label="Ejemplo" outlined dense dark bg-color="dark" placeholder="2024-01-01" />
+                          <q-input
+                            v-model="header.example"
+                            label="Ejemplo"
+                            outlined
+                            dense
+                            dark
+                            bg-color="dark"
+                            placeholder="2024-01-01"
+                          />
                         </div>
                         <div class="col-12 col-sm-3">
-                          <q-input v-model="header.description" label="Descripción" outlined dense dark bg-color="dark" placeholder="Fecha de la solicitud en formato ISO" />
+                          <q-input
+                            v-model="header.description"
+                            label="Descripción"
+                            outlined
+                            dense
+                            dark
+                            bg-color="dark"
+                            placeholder="Fecha de la solicitud en formato ISO"
+                          />
                         </div>
                         <div class="col-12 col-sm-1 flex items-center justify-between">
-                          <q-checkbox v-model="header.required" label="Req." dark dense color="primary" />
-                          <q-btn flat dense round icon="delete" color="negative" size="sm" @click="eliminarHeader(index, hIndex)" />
+                          <q-checkbox
+                            v-model="header.required"
+                            label="Req."
+                            dark
+                            dense
+                            color="primary"
+                          />
+                          <q-btn
+                            flat
+                            dense
+                            round
+                            icon="delete"
+                            color="negative"
+                            size="sm"
+                            @click="eliminarHeader(index, hIndex)"
+                          />
                         </div>
                       </div>
                     </div>
 
-                    <div v-if="endpoint.headers.length === 0" class="text-grey-6 text-center q-pa-md">
-                      Sin headers requeridos. Agrega los que el consumidor debe enviar (ej: x-firma, x-fecha, api-version).
+                    <div
+                      v-if="endpoint.headers.length === 0"
+                      class="text-grey-6 text-center q-pa-md"
+                    >
+                      Sin headers requeridos. Agrega los que el consumidor debe enviar (ej: x-firma,
+                      x-fecha, api-version).
                     </div>
                   </div>
                 </q-tab-panel>
@@ -312,7 +381,6 @@
                 <!-- Flujo de autenticación -->
                 <q-tab-panel name="auth">
                   <div class="q-pa-none">
-
                     <!-- Marca como endpoint generador de token -->
                     <div class="auth-flag-section q-mb-lg">
                       <q-toggle
@@ -322,7 +390,8 @@
                         label="Este endpoint genera un token de autenticación"
                       />
                       <div class="text-grey-6 text-caption q-mt-xs q-ml-lg">
-                        Activa esto si el endpoint retorna un token que debe usarse en llamadas posteriores (ej: POST /authorize, POST /login).
+                        Activa esto si el endpoint retorna un token que debe usarse en llamadas
+                        posteriores (ej: POST /authorize, POST /login).
                       </div>
                     </div>
 
@@ -364,7 +433,6 @@
                         hint="Describe paso a paso el flujo de autenticación para que el consumidor entienda cómo usar este endpoint."
                       />
                     </div>
-
                   </div>
                 </q-tab-panel>
 
@@ -572,9 +640,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, defineAsyncComponent } from 'vue'
 import { useQuasar } from 'quasar'
 import { useApisStore } from 'stores/apis-store.js'
+
+const GeneradorIADocumentacion = defineAsyncComponent(
+  () => import('src/components/apis/GeneradorIADocumentacion.vue'),
+)
 
 const props = defineProps({
   apiId: {
@@ -650,7 +722,6 @@ async function cargarDocumentacionExistente() {
       modoEdicion.value = true
 
       const loadedEndpoints = documentation.documentation.map((endpoint, idx) => {
-
         return {
           tempId: endpoint.id || `temp-${Date.now()}-${idx}`,
           id: endpoint.id,
@@ -693,9 +764,9 @@ async function cargarDocumentacionExistente() {
       // Restaurar campos de auth por endpoint
       loadedEndpoints.forEach((ep, i) => {
         const src = documentation.documentation[i]
-        ep.is_auth_endpoint    = src?.is_auth_endpoint    || false
-        ep.auth_notes          = src?.auth_notes           || ''
-        ep.requires_token_from = src?.requires_token_from  || null
+        ep.is_auth_endpoint = src?.is_auth_endpoint || false
+        ep.auth_notes = src?.auth_notes || ''
+        ep.requires_token_from = src?.requires_token_from || null
       })
 
       // Asignar el nuevo array
@@ -728,6 +799,69 @@ function getMethodColor(method) {
     PATCH: 'purple',
   }
   return colors[method] || 'grey'
+}
+
+function onEndpointsGenerados({ endpoints: generados }) {
+  if (!generados?.length) return
+
+  generados.forEach((ep) => {
+    // Mapear la estructura de Groq a la estructura interna del formulario
+    const nuevoEndpoint = {
+      tempId: `temp-${Date.now()}-${Math.random()}`,
+      path: ep.path || '',
+      method: ep.method || 'GET',
+      description: ep.description || '',
+      activeTab: 'parameters',
+      is_auth_endpoint: false,
+      auth_notes: '',
+      requires_token_from: null,
+
+      // Parámetros (query + path)
+      parameters: (ep.parameters || []).map((p) => ({
+        name: p.name || '',
+        type: p.type || 'string',
+        required: p.required ?? false,
+        location: p.location || 'query',
+        description: p.description || '',
+        example: p.example !== undefined ? String(p.example) : '',
+      })),
+
+      // Headers
+      headers: (ep.headers || []).map((h) => ({
+        name: h.name || '',
+        type: h.type || 'string',
+        required: h.required ?? false,
+        description: h.description || '',
+        example: h.example || '',
+      })),
+
+      // Bodies (solo para POST/PUT/PATCH)
+      bodies: (ep.bodies || []).map((b) => ({
+        content_type: b.content_type || 'application/json',
+        description: b.description || '',
+        example:
+          typeof b.example === 'object' ? JSON.stringify(b.example, null, 2) : b.example || '{}',
+      })),
+
+      // Responses
+      responses: (ep.responses || []).map((r) => ({
+        status_code: r.status_code || 200,
+        description: r.description || '',
+        example:
+          typeof r.example === 'object' ? JSON.stringify(r.example, null, 2) : r.example || '{}',
+      })),
+    }
+
+    endpoints.value.push(nuevoEndpoint)
+  })
+
+  $q.notify({
+    type: 'positive',
+    icon: 'auto_awesome',
+    message: `${generados.length} endpoint${generados.length !== 1 ? 's' : ''} agregado${generados.length !== 1 ? 's' : ''} desde la IA`,
+    caption: 'Revisa y ajusta los detalles antes de guardar',
+    timeout: 4000,
+  })
 }
 
 function agregarEndpoint() {
@@ -834,7 +968,11 @@ function eliminarResponse(endpointIndex, responseIndex) {
 
 function agregarHeader(endpointIndex) {
   endpoints.value[endpointIndex].headers.push({
-    name: '', type: 'string', required: false, description: '', example: '',
+    name: '',
+    type: 'string',
+    required: false,
+    description: '',
+    example: '',
   })
 }
 
@@ -869,7 +1007,6 @@ function parseJsonResponse(endpointIndex, responseIndex) {
 }
 
 async function onSubmit() {
-
   // Validar JSONs antes de enviar
   let hasErrors = false
   endpoints.value.forEach((endpoint, eIndex) => {
@@ -915,16 +1052,16 @@ async function onSubmit() {
         headers: ep.headers
           .filter((h) => h.name)
           .map((h) => ({
-            name:        h.name,
-            type:        h.type        || 'string',
-            required:    h.required    || false,
+            name: h.name,
+            type: h.type || 'string',
+            required: h.required || false,
             description: h.description || '',
-            example:     h.example     || '',
-            location:    'header',
+            example: h.example || '',
+            location: 'header',
           })),
-        is_auth_endpoint:    ep.is_auth_endpoint    || false,
-        auth_notes:          ep.auth_notes           || null,
-        requires_token_from: ep.requires_token_from  || null,
+        is_auth_endpoint: ep.is_auth_endpoint || false,
+        auth_notes: ep.auth_notes || null,
+        requires_token_from: ep.requires_token_from || null,
         bodies: ep.bodies.map((b) => ({
           content_type: b.content_type,
           example: b.example,
@@ -937,7 +1074,6 @@ async function onSubmit() {
       }
     })
 
-
     const result = await apisStore.registrarApiDocumentation(
       props.apiId,
       versionName.value,
@@ -945,7 +1081,6 @@ async function onSubmit() {
       formattedEndpoints,
       modoEdicion.value, // updateExisting
     )
-
 
     $q.notify({
       type: 'positive',

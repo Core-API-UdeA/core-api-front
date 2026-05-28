@@ -13,16 +13,11 @@ const routes = [
         path: '/payment/success',
         name: 'payment-success',
         component: () => import('pages/pagos/PaymentSuccessPage.vue'),
-        meta: { authRequired: true },
       },
       {
         path: '/payment/cancel',
         name: 'payment-cancel',
         component: () => import('pages/pagos/PaymentCancelPage.vue'),
-        meta: {
-          authRequired: false,
-          title: 'Pago Cancelado',
-        },
       },
     ],
   },
@@ -67,6 +62,13 @@ const routes = [
         component: () => import('pages/CatalogoPage.vue'),
         meta: { authRequired: true },
       },
+      // ── NUEVA RUTA: Mis suscripciones ──
+      {
+        path: 'mis-suscripciones',
+        name: 'mis-suscripciones',
+        component: () => import('pages/pagos/MisSuscripcionesPage.vue'),
+        meta: { authRequired: true },
+      },
       {
         path: 'apis',
         children: [
@@ -92,13 +94,11 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/TerminosPage.vue') }],
   },
-
   {
     path: '/quienes-somos',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/QuienesSomosPage.vue') }],
   },
-
   {
     path: '/contacto',
     component: () => import('layouts/MainLayout.vue'),

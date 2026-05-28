@@ -149,25 +149,31 @@ function toggleDrawer() {
 }
 
 const links = [
-  {
-    title: 'Home',
-    caption: 'Home Page',
-    link: '/main',
-    icon: 'fas fa-home',
-  },
-  {
-    title: 'APIs',
-    caption: 'Manage your APIs',
-    link: '/main/apis',
-    icon: 'api',
-  },
-  {
-    title: 'Catalogo',
-    caption: 'Browse our catalog',
-    link: '/main/catalogo',
-    icon: 'fas fa-bag-shopping',
-  },
-]
+    {
+      title: 'Home',
+      caption: 'Panel principal',
+      link: '/main',
+      icon: 'fas fa-home',
+    },
+    {
+      title: 'Mis suscripciones',
+      caption: 'APIs a las que accedo',
+      link: '/main/mis-suscripciones',
+      icon: 'bookmark',
+    },
+    {
+      title: 'Mis APIs',
+      caption: 'APIs que publico',
+      link: '/main/apis',
+      icon: 'api',
+    },
+    {
+      title: 'Explorar catálogo',
+      caption: 'Descubrir nuevas APIs',
+      link: '/main/catalogo',
+      icon: 'explore',
+    },
+  ]
 
 const morphGroupModel = ref('btn')
 const nextMorphStep = { btn: 'card1', card1: 'btn' }

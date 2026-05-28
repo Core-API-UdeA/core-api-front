@@ -114,9 +114,9 @@
             active-color="primary"
             indicator-color="primary"
           >
-            <q-tab name="response" label="Response" />
-            <q-tab name="params" label="Params" />
-            <q-tab name="headers" label="Headers" />
+            <q-tab name="response" label="Response" class="text-white"/>
+            <q-tab name="params" label="Params" class="text-white"/>
+            <q-tab name="headers" label="Headers" class="text-white"/>
           </q-tabs>
 
           <!-- Tab: Response -->

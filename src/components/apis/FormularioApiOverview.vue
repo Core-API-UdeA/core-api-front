@@ -196,14 +196,32 @@
           <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="readme-editor-container">
               <div class="section-header">
-                <div>
-                  <span class="section-title">README (Markdown)</span>
-                  <q-icon name="help" size="xs" color="grey-5" class="q-ml-xs">
-                    <q-tooltip class="bg-primary text-white" max-width="300px">
-                      Usa Markdown para formatear tu documentación.<br />
-                      # Título, **negrita**, *cursiva*, [enlace](url), etc.
+                <div class="row items-center q-gutter-sm">
+                  <div>
+                    <span class="section-title">README (Markdown)</span>
+                    <q-icon name="help" size="xs" color="grey-5" class="q-ml-xs">
+                      <q-tooltip class="bg-primary text-white" max-width="300px">
+                        Usa Markdown para formatear tu documentación.<br />
+                        # Título, **negrita**, *cursiva*, [enlace](url), etc.
+                      </q-tooltip>
+                    </q-icon>
+                  </div>
+
+                  <!-- Botón generador de README con IA -->
+                  <q-btn
+                    flat dense no-caps rounded
+                    color="primary"
+                    icon="auto_awesome"
+                    label="Generar con IA"
+                    size="sm"
+                    :loading="generandoReadme"
+                    @click="generarReadmeIA"
+                  >
+                    <q-tooltip class="bg-dark text-white">
+                      Genera automáticamente el README basándose en el título,
+                      tipo y resumen que ya llenaste
                     </q-tooltip>
-                  </q-icon>
+                  </q-btn>
                 </div>
 
                 <q-btn-toggle
@@ -304,6 +322,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useApisStore } from 'stores/apis-store.js'
 import { marked } from 'marked'
+import { axiosInstance } from 'boot/axios.js'
 
 const props = defineProps({
   apiId: {
@@ -327,6 +346,61 @@ const modoEdicion = computed(() => !!props.apiId)
 const selectedTechnologies = ref([])
 const techInput = ref('')
 const filteredTechOptions = ref([])
+
+const generandoReadme = ref(false)
+
+async function generarReadmeIA() {
+  const { title, type, short_summary, technology_stack } = formData.value
+
+  if (!title && !short_summary) {
+    $q.notify({
+      type: 'warning',
+      message: 'Completa al menos el título y el resumen antes de generar el README.',
+      icon: 'warning',
+    })
+    return
+  }
+
+  generandoReadme.value = true
+
+  try {
+    const response = await axiosInstance.post('/catalogo/generar-readme-ia', {
+      titulo: title || 'Mi API',
+      tipo: type || 'REST',
+      resumen: short_summary || '',
+      tecnologias: technology_stack || '',
+    })
+
+    const ejec = response.data?.ejecucion
+    if (ejec?.respuesta?.estado !== 'OK') {
+      throw new Error(ejec?.respuesta?.mensaje || 'Error al generar el README')
+    }
+
+    formData.value.readme = ejec.data.readme
+
+    $q.notify({
+      type: 'positive',
+      icon: 'auto_awesome',
+      message: 'README generado con IA',
+      caption: 'Revísalo y edítalo a tu gusto antes de guardar',
+      timeout: 4000,
+    })
+
+    // Cambiar a preview para que lo vea inmediatamente
+    editorMode.value = 'split'
+  } catch (error) {
+    $q.notify({
+      type: 'negative',
+      message:
+        error.response?.data?.ejecucion?.respuesta?.mensaje ||
+        error.message ||
+        'Error al generar el README',
+      icon: 'error',
+    })
+  } finally {
+    generandoReadme.value = false
+  }
+}
 
 const formData = ref({
   title: '',

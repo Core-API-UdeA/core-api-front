@@ -29,7 +29,7 @@
             bg-color="dark"
             color="primary"
             dark
-            @keyup.enter="aplicarBusqueda"
+            @keyup.enter="aplicarBusqueda()"
           >
             <template v-slot:prepend>
               <q-icon name="search" color="grey-5" />
@@ -48,7 +48,7 @@
                 label="Buscar"
                 no-caps
                 class="q-ml-sm q-mr-xs"
-                @click="aplicarBusqueda"
+                @click="aplicarBusqueda()"
               />
             </template>
           </q-input>

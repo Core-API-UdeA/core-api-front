@@ -19,6 +19,16 @@
           <q-btn flat round dense no-caps icon="fab fa-instagram" class="text-white" />
           <q-btn flat round dense no-caps icon="fab fa-github" class="text-white" />
           <q-btn
+            flat round dense
+            :icon="themeStore.isDark ? 'light_mode' : 'dark_mode'"
+            class="text-accentitems"
+            @click="themeStore.toggleTheme()"
+          >
+            <q-tooltip anchor="bottom middle" self="top middle" :delay="500">
+              {{ themeStore.isDark ? 'Tema claro' : 'Tema oscuro' }}
+            </q-tooltip>
+          </q-btn>
+          <q-btn
             label="Sign In"
             class="text-white"
             color="primary"
@@ -76,5 +86,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { useThemeStore } from 'stores/theme-store'
+
+const themeStore = useThemeStore()
 </script>

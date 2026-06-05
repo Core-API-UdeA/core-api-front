@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(findstr /R /C:\"text-white\\\\|text-grey\\\\|text-black\\\\|text-accent\\\\|bg-dark\\\\|bg-black\\\\|bg-accent\\\\|bg-bgpage\" src\\\\pages\\\\*.vue src\\\\components\\\\*.vue src\\\\components\\\\**\\\\*.vue)",
+      "Bash(powershell -Command \"Get-Content 'c:\\\\Users\\\\Usuario\\\\Desktop\\\\Ude@\\\\14Semestre\\\\Proyecto integrador\\\\core-api-front\\\\src\\\\components\\\\apis\\\\ApiDocumentation.vue' | Select-Object -Skip 350\")",
+      "Bash(powershell -Command \"Get-Content 'c:\\\\Users\\\\Usuario\\\\Desktop\\\\Ude@\\\\14Semestre\\\\Proyecto integrador\\\\core-api-front\\\\src\\\\components\\\\apis\\\\ApiMetricas.vue' | Select-Object -Skip 540\")",
+      "Bash(powershell -Command \"Get-Content 'c:\\\\Users\\\\Usuario\\\\Desktop\\\\Ude@\\\\14Semestre\\\\Proyecto integrador\\\\core-api-front\\\\src\\\\components\\\\pagos\\\\ApiPricingPlans.vue' | Select-Object -Skip 600\")",
+      "Bash(powershell -Command \"Get-Content 'c:\\\\Users\\\\Usuario\\\\Desktop\\\\Ude@\\\\14Semestre\\\\Proyecto integrador\\\\core-api-front\\\\src\\\\components\\\\apis\\\\FormularioApiDocumentation.vue' | Select-Object -Skip 1120\")",
+      "Bash(git checkout *)"
+    ]
+  }
+}

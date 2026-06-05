@@ -365,7 +365,7 @@ async function handleDocumentationUpdated() {
 .section-title {
   font-size: 24px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 20px;
 }
 
@@ -379,8 +379,8 @@ async function handleDocumentationUpdated() {
 }
 
 .endpoint-card {
-  background: #0f0f0f;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
   border-radius: 8px;
   padding: 16px;
   cursor: pointer;
@@ -412,21 +412,21 @@ async function handleDocumentationUpdated() {
 }
 
 .endpoint-path {
-  color: #ffffff;
+  color: var(--text-primary);
   font-weight: 500;
   font-size: 14px;
 }
 
 .endpoint-description {
-  color: #b0b0b0;
+  color: var(--text-secondary);
   font-size: 13px;
   margin: 0;
   line-height: 1.5;
 }
 
 .no-endpoints {
-  background: #0f0f0f;
-  border: 1px dashed #2a2a2a;
+  background: var(--surface-1);
+  border: 1px dashed var(--surface-border);
   border-radius: 12px;
   min-height: 300px;
   display: flex;
@@ -436,14 +436,14 @@ async function handleDocumentationUpdated() {
 }
 
 .endpoint-details {
-  background: #0d0d0d;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
   border-radius: 12px;
   padding: 24px;
 }
 
 .detail-title {
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 16px;
@@ -452,7 +452,7 @@ async function handleDocumentationUpdated() {
 }
 
 .detail-subtitle {
-  color: #b0b0b0;
+  color: var(--text-secondary);
   font-size: 12px;
   margin-bottom: 8px;
   text-transform: uppercase;
@@ -466,8 +466,8 @@ async function handleDocumentationUpdated() {
 }
 
 .parameter-item {
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-border);
   border-radius: 6px;
   padding: 12px;
 }
@@ -480,7 +480,7 @@ async function handleDocumentationUpdated() {
 }
 
 .param-name {
-  color: #ffffff;
+  color: var(--text-primary);
   font-weight: 500;
   font-size: 14px;
 }
@@ -494,7 +494,7 @@ async function handleDocumentationUpdated() {
 }
 
 .param-description {
-  color: #b0b0b0;
+  color: var(--text-secondary);
   font-size: 13px;
   margin: 0;
   line-height: 1.5;
@@ -506,8 +506,8 @@ async function handleDocumentationUpdated() {
 }
 
 .code-block {
-  background: #0f0f0f;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
   border-radius: 8px;
   padding: 16px;
   overflow-x: auto;
@@ -539,11 +539,11 @@ async function handleDocumentationUpdated() {
   gap: 8px;
   margin-bottom: 8px;
   padding: 8px 12px;
-  background: #1a1a1a;
+  background: var(--surface-2);
   border-radius: 6px;
 
   .code-label {
-    color: #b0b0b0;
+    color: var(--text-secondary);
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -556,7 +556,7 @@ async function handleDocumentationUpdated() {
   }
 
   .code-description {
-    color: #b0b0b0;
+    color: var(--text-secondary);
     font-size: 13px;
   }
 }
@@ -570,7 +570,7 @@ async function handleDocumentationUpdated() {
 }
 
 .example-code {
-  background: #252525;
+  background: var(--surface-3);
   color: #00a8a8;
   padding: 2px 6px;
   border-radius: 4px;
@@ -584,7 +584,7 @@ async function handleDocumentationUpdated() {
   align-items: center;
   padding: 8px 12px;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--auth-badge-bg);
 }
 
 .auth-notes {
@@ -596,7 +596,7 @@ async function handleDocumentationUpdated() {
 
 .auth-notes-text {
   margin: 6px 0 0 20px;
-  color: #b0b0b0;
+  color: var(--text-secondary);
   font-size: 13px;
   font-family: inherit;
   line-height: 1.7;
@@ -609,7 +609,7 @@ async function handleDocumentationUpdated() {
 }
 
 .skeleton-item {
-  background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+  background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
   border-radius: 4px;
@@ -620,8 +620,8 @@ async function handleDocumentationUpdated() {
 }
 
 .skeleton-endpoint {
-  background: #0f0f0f;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
   border-radius: 8px;
   padding: 16px;
 }

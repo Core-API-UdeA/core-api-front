@@ -691,8 +691,8 @@ function irAlPricing(sub) {
 <style lang="scss" scoped>
 /* ── Card principal ── */
 .suscripcion-card {
-  background: linear-gradient(145deg, #0d0d0d 0%, #1a1a1a 100%);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--coreapi-card-bg);
+  border: 1px solid var(--coreapi-card-border);
   border-radius: 16px;
   transition: all 0.3s ease;
   /* Crítico para responsive: evita que el contenido interno
@@ -719,16 +719,16 @@ function irAlPricing(sub) {
 .stat-pill {
   display: inline-flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--coreapi-stat-pill-bg);
+  border: 1px solid var(--coreapi-stat-pill-border);
   border-radius: 20px;
   padding: 6px 14px;
   font-size: 13px;
 }
 
 .empty-state {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  background: var(--coreapi-empty-state-bg);
+  border: 1px dashed var(--coreapi-empty-state-border);
   border-radius: 16px;
   padding: 60px 20px;
 }
@@ -742,7 +742,7 @@ function irAlPricing(sub) {
 
 /* ── API Key ── */
 .apikey-box {
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--coreapi-code-box-bg);
   border: 1px solid rgba(0, 168, 168, 0.2);
   border-radius: 10px;
   padding: 10px 12px;
@@ -752,7 +752,7 @@ function irAlPricing(sub) {
 }
 
 .apikey-value-row {
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--coreapi-code-row-bg);
   border-radius: 6px;
   padding: 6px 10px;
   overflow-x: auto;
@@ -775,8 +775,8 @@ function irAlPricing(sub) {
 }
 
 .ejemplo-box {
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--coreapi-code-example-bg);
+  border: 1px solid var(--coreapi-card-border);
   border-radius: 8px;
   padding: 10px 12px;
   overflow: hidden;
@@ -785,7 +785,7 @@ function irAlPricing(sub) {
 .ejemplo-code {
   font-family: 'Consolas', 'Roboto Mono', monospace;
   font-size: 10px;
-  color: #b0bec5;
+  color: var(--coreapi-example-code-color);
   line-height: 1.8;
   display: block;
   white-space: pre-wrap;

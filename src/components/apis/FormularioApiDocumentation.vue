@@ -19,9 +19,9 @@
               label="Versión *"
               outlined
               dense
-              dark
+              :dark="$q.dark.isActive"
               color="primary"
-              bg-color="dark"
+              :bg-color="$q.dark.isActive ? 'dark' : undefined"
               placeholder="v1, 1.0.0, etc."
               :rules="[(val) => !!val || 'La versión es requerida']"
               :disable="modoEdicion"
@@ -42,9 +42,9 @@
               label="Changelog"
               outlined
               dense
-              dark
+              :dark="$q.dark.isActive"
               color="primary"
-              bg-color="dark"
+              :bg-color="$q.dark.isActive ? 'dark' : undefined"
               placeholder="Cambios en esta versión..."
             >
               <template v-slot:prepend>
@@ -75,7 +75,7 @@
           :key="endpoint.tempId || index"
           :label="`${endpoint.method} ${endpoint.path || '/path'}`"
           :caption="endpoint.description || 'Sin descripción'"
-          dark
+          :dark="$q.dark.isActive"
           class="endpoint-item q-mb-sm"
           :header-class="`endpoint-header method-${endpoint.method.toLowerCase()}`"
           expand-icon-class="text-white"
@@ -109,7 +109,7 @@
             </div>
           </template>
 
-          <q-card flat dark class="endpoint-details">
+          <q-card flat :dark="$q.dark.isActive" class="endpoint-details">
             <q-card-section>
               <!-- Path y Método -->
               <div class="row q-col-gutter-md q-mb-md">
@@ -119,9 +119,9 @@
                     label="Path *"
                     outlined
                     dense
-                    dark
+                    :dark="$q.dark.isActive"
                     color="primary"
-                    bg-color="dark"
+                    :bg-color="$q.dark.isActive ? 'dark' : undefined"
                     placeholder="/users, /users/:id"
                     :rules="[(val) => !!val || 'El path es requerido']"
                   >
@@ -136,9 +136,9 @@
                     label="Método *"
                     outlined
                     dense
-                    dark
+                    :dark="$q.dark.isActive"
                     color="primary"
-                    bg-color="dark"
+                    :bg-color="$q.dark.isActive ? 'dark' : undefined"
                     :options="metodosHttp"
                     emit-value
                     map-options
@@ -156,9 +156,9 @@
                 label="Descripción"
                 outlined
                 dense
-                dark
+                :dark="$q.dark.isActive"
                 color="primary"
-                bg-color="dark"
+                :bg-color="$q.dark.isActive ? 'dark' : undefined"
                 type="textarea"
                 rows="2"
                 class="q-mb-md"
@@ -167,7 +167,7 @@
               <!-- Tabs para Parameters, Body, Responses -->
               <q-tabs
                 v-model="endpoint.activeTab"
-                dark
+                :dark="$q.dark.isActive"
                 dense
                 class="text-grey"
                 active-color="primary"
@@ -181,9 +181,9 @@
                 <q-tab name="responses" label="Responses" />
               </q-tabs>
 
-              <q-separator dark />
+              <q-separator :dark="$q.dark.isActive" />
 
-              <q-tab-panels v-model="endpoint.activeTab" animated dark class="bg-transparent">
+              <q-tab-panels v-model="endpoint.activeTab" animated :dark="$q.dark.isActive" class="bg-transparent">
                 <!-- Parameters -->
                 <q-tab-panel name="parameters">
                   <div class="q-pa-none">
@@ -213,8 +213,8 @@
                             label="Nombre"
                             outlined
                             dense
-                            dark
-                            bg-color="dark"
+                            :dark="$q.dark.isActive"
+                            :bg-color="$q.dark.isActive ? 'dark' : undefined"
                             placeholder="page, id, etc."
                           />
                         </div>
@@ -224,8 +224,8 @@
                             label="Tipo"
                             outlined
                             dense
-                            dark
-                            bg-color="dark"
+                            :dark="$q.dark.isActive"
+                            :bg-color="$q.dark.isActive ? 'dark' : undefined"
                             :options="tiposParametro"
                             emit-value
                             map-options
@@ -237,15 +237,15 @@
                             label="Descripción"
                             outlined
                             dense
-                            dark
-                            bg-color="dark"
+                            :dark="$q.dark.isActive"
+                            :bg-color="$q.dark.isActive ? 'dark' : undefined"
                           />
                         </div>
                         <div class="col-12 col-sm-1 flex items-center">
                           <q-checkbox
                             v-model="param.required"
                             label="Req."
-                            dark
+                            :dark="$q.dark.isActive"
                             dense
                             color="primary"
                           />
@@ -307,8 +307,8 @@
                             label="Nombre"
                             outlined
                             dense
-                            dark
-                            bg-color="dark"
+                            :dark="$q.dark.isActive"
+                            :bg-color="$q.dark.isActive ? 'dark' : undefined"
                             placeholder="x-firma, x-fecha, x-token"
                           />
                         </div>
@@ -318,8 +318,8 @@
                             label="Tipo"
                             outlined
                             dense
-                            dark
-                            bg-color="dark"
+                            :dark="$q.dark.isActive"
+                            :bg-color="$q.dark.isActive ? 'dark' : undefined"
                             :options="tiposParametro"
                             emit-value
                             map-options
@@ -331,8 +331,8 @@
                             label="Ejemplo"
                             outlined
                             dense
-                            dark
-                            bg-color="dark"
+                            :dark="$q.dark.isActive"
+                            :bg-color="$q.dark.isActive ? 'dark' : undefined"
                             placeholder="2024-01-01"
                           />
                         </div>
@@ -342,8 +342,8 @@
                             label="Descripción"
                             outlined
                             dense
-                            dark
-                            bg-color="dark"
+                            :dark="$q.dark.isActive"
+                            :bg-color="$q.dark.isActive ? 'dark' : undefined"
                             placeholder="Fecha de la solicitud en formato ISO"
                           />
                         </div>
@@ -351,7 +351,7 @@
                           <q-checkbox
                             v-model="header.required"
                             label="Req."
-                            dark
+                            :dark="$q.dark.isActive"
                             dense
                             color="primary"
                           />
@@ -386,7 +386,7 @@
                       <q-toggle
                         v-model="endpoint.is_auth_endpoint"
                         color="primary"
-                        dark
+                        :dark="$q.dark.isActive"
                         label="Este endpoint genera un token de autenticación"
                       />
                       <div class="text-grey-6 text-caption q-mt-xs q-ml-lg">
@@ -405,9 +405,9 @@
                         map-options
                         outlined
                         dense
-                        dark
+                        :dark="$q.dark.isActive"
                         color="primary"
-                        bg-color="dark"
+                        :bg-color="$q.dark.isActive ? 'dark' : undefined"
                         clearable
                         placeholder="Ninguno — este endpoint no requiere token previo"
                         hint="Selecciona el endpoint que genera el token que este endpoint necesita."
@@ -426,9 +426,9 @@
                         type="textarea"
                         rows="5"
                         outlined
-                        dark
+                        :dark="$q.dark.isActive"
                         color="primary"
-                        bg-color="dark"
+                        :bg-color="$q.dark.isActive ? 'dark' : undefined"
                         placeholder="Ej: Primero llama a POST /api/v2/authorize con las credenciales para obtener el token. Luego incluye ese token en el header Authorization: Bearer <token> en esta llamada. El token expira en 24 horas."
                         hint="Describe paso a paso el flujo de autenticación para que el consumidor entienda cómo usar este endpoint."
                       />
@@ -465,8 +465,8 @@
                             label="Content-Type"
                             outlined
                             dense
-                            dark
-                            bg-color="dark"
+                            :dark="$q.dark.isActive"
+                            :bg-color="$q.dark.isActive ? 'dark' : undefined"
                             :options="contentTypes"
                             emit-value
                             map-options
@@ -478,8 +478,8 @@
                             label="Ejemplo (JSON)"
                             outlined
                             dense
-                            dark
-                            bg-color="dark"
+                            :dark="$q.dark.isActive"
+                            :bg-color="$q.dark.isActive ? 'dark' : undefined"
                             type="textarea"
                             rows="4"
                             placeholder='{ "name": "John", "email": "john@example.com" }'
@@ -541,8 +541,8 @@
                             label="Status Code"
                             outlined
                             dense
-                            dark
-                            bg-color="dark"
+                            :dark="$q.dark.isActive"
+                            :bg-color="$q.dark.isActive ? 'dark' : undefined"
                             type="number"
                             placeholder="200"
                           />
@@ -553,8 +553,8 @@
                             label="Content-Type"
                             outlined
                             dense
-                            dark
-                            bg-color="dark"
+                            :dark="$q.dark.isActive"
+                            :bg-color="$q.dark.isActive ? 'dark' : undefined"
                             :options="contentTypes"
                             emit-value
                             map-options
@@ -566,8 +566,8 @@
                             label="Ejemplo (JSON)"
                             outlined
                             dense
-                            dark
-                            bg-color="dark"
+                            :dark="$q.dark.isActive"
+                            :bg-color="$q.dark.isActive ? 'dark' : undefined"
                             type="textarea"
                             rows="4"
                             placeholder='{ "id": 1, "name": "John" }'
@@ -1131,14 +1131,14 @@ defineExpose({
 }
 
 .endpoints-card {
-  background: #0d0d0d;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
   border-radius: 12px;
 }
 
 .endpoint-item {
-  background: #0f0f0f;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
   border-radius: 8px;
   transition: all 0.3s ease;
 
@@ -1152,7 +1152,7 @@ defineExpose({
 }
 
 .endpoint-header {
-  background: #1a1a1a;
+  background: var(--surface-2);
   padding: 12px 16px;
   border-radius: 8px 8px 0 0;
 
@@ -1185,18 +1185,18 @@ defineExpose({
 }
 
 .endpoint-details {
-  background: #0f0f0f;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
   border-top: none;
 }
 
 .parameter-row,
 .body-row,
 .response-row {
-  background: #1a1a1a;
+  background: var(--surface-2);
   padding: 12px;
   border-radius: 6px;
-  border: 1px solid #2a2a2a;
+  border: 1px solid var(--surface-border);
 }
 
 :deep(.q-tab-panel) {
@@ -1220,7 +1220,7 @@ defineExpose({
 }
 
 .section-label {
-  color: #aaa;
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.4px;

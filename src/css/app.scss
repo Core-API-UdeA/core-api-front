@@ -1,3 +1,242 @@
+// ─── CSS custom properties para componentes con estilos scoped ─────────────
+// Los overrides globales no penetran estilos scoped. Las variables CSS sí.
+:root {
+  // Variables semánticas reutilizables en todos los componentes
+  --surface-1: #0d0d0d;
+  --surface-2: #1a1a1a;
+  --surface-3: #252525;
+  --surface-border: #2a2a2a;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --text-muted: #888;
+  --skeleton-from: #2a2a2a;
+  --skeleton-to: #3a3a3a;
+  --region-bar-bg: rgba(255, 255, 255, 0.05);
+  --auth-badge-bg: rgba(0, 0, 0, 0.3);
+  // Suscripciones / cards
+  --coreapi-card-bg: linear-gradient(145deg, #0d0d0d 0%, #1a1a1a 100%);
+  --coreapi-card-border: rgba(255, 255, 255, 0.07);
+  --coreapi-stat-pill-bg: rgba(255, 255, 255, 0.04);
+  --coreapi-stat-pill-border: rgba(255, 255, 255, 0.08);
+  --coreapi-empty-state-bg: rgba(255, 255, 255, 0.02);
+  --coreapi-empty-state-border: rgba(255, 255, 255, 0.1);
+  --coreapi-code-box-bg: rgba(0, 0, 0, 0.5);
+  --coreapi-code-row-bg: rgba(0, 0, 0, 0.4);
+  --coreapi-code-example-bg: rgba(0, 0, 0, 0.6);
+  --coreapi-example-code-color: #b0bec5;
+  // Formulario registro API
+  --coreapi-form-card-bg: linear-gradient(145deg, #0d0d0d 0%, #1a1a1a 100%);
+  --coreapi-input-bg: rgba(0, 0, 0, 0.3);
+  --coreapi-input-bg-hover: rgba(0, 0, 0, 0.4);
+  --coreapi-section-title: #ffffff;
+  --coreapi-tech-card-bg: rgba(0, 0, 0, 0.3);
+  --coreapi-tech-card-color: #ffffff;
+  --coreapi-preview-pane-bg: rgba(0, 0, 0, 0.4);
+  --coreapi-textarea-bg: rgba(0, 0, 0, 0.4);
+  --coreapi-preview-label: #b0b0b0;
+  --coreapi-readme-heading: #ffffff;
+  --coreapi-readme-text: #b0b0b0;
+  --coreapi-readme-strong: #ffffff;
+  --coreapi-readme-em: #c0c0c0;
+  --coreapi-readme-pre-bg: rgba(0, 0, 0, 0.6);
+  --coreapi-readme-td: #b0b0b0;
+}
+
+body.body--light {
+  // Variables semánticas en modo claro
+  --surface-1: #F0FAFA;
+  --surface-2: #FFFFFF;
+  --surface-3: #E8F5F5;
+  --surface-border: rgba(10, 76, 82, 0.12);
+  --text-primary: #1a1a2e;
+  --text-secondary: #4B5563;
+  --text-muted: #6B7280;
+  --skeleton-from: #D4EEEE;
+  --skeleton-to: #E8F5F5;
+  --region-bar-bg: rgba(10, 76, 82, 0.08);
+  --auth-badge-bg: rgba(0, 0, 0, 0.04);
+  // Suscripciones / cards
+  --coreapi-card-bg: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  --coreapi-card-border: rgba(0, 0, 0, 0.08);
+  --coreapi-stat-pill-bg: rgba(0, 0, 0, 0.04);
+  --coreapi-stat-pill-border: rgba(0, 0, 0, 0.08);
+  --coreapi-empty-state-bg: rgba(0, 0, 0, 0.015);
+  --coreapi-empty-state-border: rgba(0, 0, 0, 0.1);
+  --coreapi-code-box-bg: rgba(0, 0, 0, 0.04);
+  --coreapi-code-row-bg: rgba(0, 0, 0, 0.03);
+  --coreapi-code-example-bg: rgba(0, 0, 0, 0.04);
+  --coreapi-example-code-color: #37474f;
+  // Formulario registro API
+  --coreapi-form-card-bg: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  --coreapi-input-bg: rgba(0, 0, 0, 0.03);
+  --coreapi-input-bg-hover: rgba(0, 0, 0, 0.05);
+  --coreapi-section-title: #1a1a2e;
+  --coreapi-tech-card-bg: rgba(0, 168, 168, 0.05);
+  --coreapi-tech-card-color: #1a1a2e;
+  --coreapi-preview-pane-bg: rgba(0, 0, 0, 0.02);
+  --coreapi-textarea-bg: rgba(0, 0, 0, 0.02);
+  --coreapi-preview-label: #6b7280;
+  --coreapi-readme-heading: #1a1a2e;
+  --coreapi-readme-text: #374151;
+  --coreapi-readme-strong: #1a1a2e;
+  --coreapi-readme-em: #4b5563;
+  --coreapi-readme-pre-bg: rgba(0, 0, 0, 0.05);
+  --coreapi-readme-td: #374151;
+}
+
+// ─── Light mode overrides ──────────────────────────────────────────────────
+body.body--light {
+  // ── Fondos principales ──────────────────────────────────────────────────
+  .bg-bgpage {
+    background-color: #EDF7F7 !important;
+    color: #1A1A2E;
+  }
+
+  .q-page-container,
+  .q-page {
+    background-color: #EDF7F7;
+  }
+
+  // ── Layouts ─────────────────────────────────────────────────────────────
+  .q-header,
+  .q-header.bg-black,
+  .q-header .q-toolbar,
+  .q-header .bg-black {
+    background-color: #FFFFFF !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .q-header .q-btn--flat {
+    color: #374151 !important;
+  }
+
+  // Sidebar con el color secundario para dar carácter
+  .q-drawer {
+    background-color: #0A4C52 !important;
+    border-right: none !important;
+  }
+
+  .q-drawer .q-item {
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  .q-drawer .q-item__label--caption {
+    color: rgba(255, 255, 255, 0.55) !important;
+  }
+
+  .q-drawer .q-icon {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  .q-drawer .q-item--active,
+  .q-drawer .q-item.q-router-link--active {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #4FE8EB !important;
+  }
+
+  .q-drawer .q-item--active .q-icon,
+  .q-drawer .q-item.q-router-link--active .q-icon {
+    color: #4FE8EB !important;
+  }
+
+  // Logo en el sidebar: invertir a blanco
+  .q-drawer .q-img {
+    filter: brightness(0) invert(1);
+  }
+
+  .q-footer,
+  .q-footer.bg-dark {
+    background-color: #F1F5F9 !important;
+    border-top: 1px solid #E2E8F0;
+    color: #4A5568 !important;
+  }
+
+  .q-footer .q-btn--flat { color: #4A5568 !important; }
+  .q-footer .text-accentitems { color: #718096 !important; }
+
+  // ── Backgrounds de cards/secciones ──────────────────────────────────────
+  .bg-accent {
+    background-color: #FFFFFF !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+    color: #1A1A2E;
+  }
+
+  .bg-dark {
+    background-color: #F1F5F9 !important;
+    color: #1A1A2E;
+  }
+
+  // ── Texto blanco dentro de contenedores ahora claros ────────────────────
+  // Cubre: páginas, cards con bg-bgpage/bg-accent/bg-dark, y sus hijos directos
+  .q-page .text-white,
+  .bg-bgpage .text-white,
+  .bg-bgpage.text-white,
+  .bg-accent .text-white,
+  .bg-accent.text-white,
+  .bg-dark .text-white,
+  .bg-dark.text-white,
+  .bg-grey-10 .text-white,
+  .bg-grey-9 .text-white {
+    color: #1A1A2E !important;
+  }
+
+  // ── Grises en contenido de página ───────────────────────────────────────
+  .q-page .text-grey-3,
+  .q-page .text-grey-4,
+  .q-page .text-grey-5,
+  .q-page .text-grey-6,
+  .bg-bgpage .text-grey-3,
+  .bg-bgpage .text-grey-4,
+  .bg-bgpage .text-grey-5,
+  .bg-bgpage .text-grey-6,
+  .bg-accent .text-grey-3,
+  .bg-accent .text-grey-4,
+  .bg-accent .text-grey-5,
+  .bg-accent .text-grey-6,
+  .bg-dark .text-grey-3,
+  .bg-dark .text-grey-4,
+  .bg-dark .text-grey-5,
+  .bg-dark .text-grey-6 {
+    color: #6B7280 !important;
+  }
+
+  .bg-bgpage .text-grey-7,
+  .bg-dark .text-grey-7,
+  .q-page .text-grey-7 { color: rgba(0, 0, 0, 0.55) !important; }
+
+  .bg-bgpage .text-grey-8,
+  .bg-dark .text-grey-8,
+  .q-page .text-grey-8 { color: rgba(0, 0, 0, 0.5) !important; }
+
+  .bg-bgpage .text-grey-9,
+  .bg-dark .text-grey-9,
+  .q-page .text-grey-9 { color: rgba(0, 0, 0, 0.45) !important; }
+
+  // ── accentitems en contenido (no footer, ya cubierto arriba) ────────────
+  .q-page .text-accentitems,
+  .bg-bgpage .text-accentitems,
+  .bg-accent .text-accentitems {
+    color: #4B5563 !important;
+  }
+
+  // ── Separadores dark en fondos claros ───────────────────────────────────
+  .q-separator--dark {
+    background-color: rgba(0, 0, 0, 0.12) !important;
+  }
+
+  // ── Quasar fields en modo claro ─────────────────────────────────────────
+  .q-field__label { color: rgba(0, 0, 0, 0.65); }
+
+  .q-field__messages,
+  .q-field__counter { color: rgba(0, 0, 0, 0.55); }
+
+  .q-field__native,
+  .q-field__input { color: #1A1A2E; }
+
+  .q-field__native::placeholder,
+  .q-field__input::placeholder { color: rgba(0, 0, 0, 0.35); }
+}
+
 // ─── Fixes globales para tipografía sobre fondo oscuro ──────────────────────
 // Los Quasar inputs/selects en modo dark a veces aplican grises muy oscuros
 // a los labels/hints. Forzamos colores legibles.

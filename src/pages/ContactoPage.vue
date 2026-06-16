@@ -326,9 +326,21 @@ async function enviarFormulario() {
 </script>
 
 <style lang="scss" scoped>
+/* ════════════════════════════════════════════════════════════════════════
+ * PALETA CoreAPI (extraída de la app real)
+ *   bg-base:    #000000  (negro puro)
+ *   bg-card:    #1a1a1a  (gris muy oscuro)
+ *   bg-card-2:  #141414  (un toque más oscuro para gradiente)
+ *   border:     rgba(255,255,255, 0.08)
+ *   primary:    #26A69A  (teal Material, vibrante)
+ *   accent:     #00BFA5  (teal más saturado para hover)
+ *   text:       #FFFFFF
+ *   text-mute:  #94A3B8
+ * ════════════════════════════════════════════════════════════════════════ */
+
 .contacto-page {
   min-height: 100vh;
-  background: #0a0f1c;
+  background: #000000;
   position: relative;
   overflow-x: hidden;
   padding: 60px 24px;
@@ -345,19 +357,19 @@ async function enviarFormulario() {
 .orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.25;
+  filter: blur(130px);
+  opacity: 0.18;
 }
 
 .orb-1 {
   width: 500px; height: 500px;
-  background: #00a8a8;
+  background: #26A69A;
   top: -200px; right: -100px;
 }
 
 .orb-2 {
   width: 400px; height: 400px;
-  background: #02c39a;
+  background: #00BFA5;
   bottom: -150px; left: -100px;
 }
 
@@ -374,9 +386,9 @@ async function enviarFormulario() {
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  background: rgba(0, 168, 168, 0.12);
-  border: 1px solid rgba(0, 168, 168, 0.3);
-  color: #00a8a8;
+  background: rgba(38, 166, 154, 0.12);
+  border: 1px solid rgba(38, 166, 154, 0.35);
+  color: #26A69A;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -417,11 +429,11 @@ async function enviarFormulario() {
 
 /* ── Form card ── */
 .form-card {
-  background: linear-gradient(145deg, #14192a 0%, #0d1220 100%);
-  border: 1px solid rgba(0, 168, 168, 0.15);
+  background: linear-gradient(145deg, #1a1a1a 0%, #141414 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 32px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 }
 
 .form-card-header {
@@ -479,17 +491,17 @@ async function enviarFormulario() {
   letter-spacing: 0;
 }
 
-/* ── Inputs personalizados (override Quasar) ── */
+/* ── Inputs personalizados ── */
 :deep(.custom-input) {
   .q-field__control {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 10px;
     min-height: 48px;
     transition: all 0.2s ease;
   }
 
   .q-field__control:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .q-field__control:before {
@@ -497,11 +509,11 @@ async function enviarFormulario() {
   }
 
   .q-field__control:hover:before {
-    border-color: rgba(0, 168, 168, 0.4) !important;
+    border-color: rgba(38, 166, 154, 0.5) !important;
   }
 
   .q-field__control:after {
-    border-color: #00a8a8;
+    border-color: #26A69A;
     border-width: 2px;
   }
 
@@ -525,20 +537,20 @@ async function enviarFormulario() {
 
 /* ── Submit ── */
 .submit-btn {
-  background: linear-gradient(135deg, #00a8a8 0%, #02c39a 100%);
+  background: linear-gradient(135deg, #26A69A 0%, #00BFA5 100%);
   color: #ffffff;
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.3px;
   padding: 14px;
   margin-top: 8px;
-  box-shadow: 0 8px 24px rgba(0, 168, 168, 0.3);
+  box-shadow: 0 8px 24px rgba(38, 166, 154, 0.35);
   transition: all 0.2s ease;
 }
 
 .submit-btn:hover:not(.disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 12px 32px rgba(0, 168, 168, 0.4);
+  box-shadow: 0 12px 32px rgba(38, 166, 154, 0.45);
 }
 
 .submit-btn.disabled { opacity: 0.5; }
@@ -590,12 +602,12 @@ async function enviarFormulario() {
 .banner-warning .banner-text { color: #fbbf24; }
 
 .banner-success {
-  background: rgba(2, 195, 154, 0.1);
-  border: 1px solid rgba(2, 195, 154, 0.3);
-  color: #02c39a;
+  background: rgba(38, 166, 154, 0.12);
+  border: 1px solid rgba(38, 166, 154, 0.35);
+  color: #26A69A;
 }
 
-.banner-success .banner-text { color: #6ee7b7; }
+.banner-success .banner-text { color: #5eead4; }
 
 .fade-slide-enter-active,
 .fade-slide-leave-active {
@@ -610,7 +622,7 @@ async function enviarFormulario() {
 
 /* ── Info sidebar ── */
 .info-card {
-  background: linear-gradient(145deg, #14192a 0%, #0d1220 100%);
+  background: linear-gradient(145deg, #1a1a1a 0%, #141414 100%);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
   padding: 32px;
@@ -619,8 +631,8 @@ async function enviarFormulario() {
 
 .info-icon-wrap {
   width: 40px; height: 40px;
-  background: rgba(0, 168, 168, 0.1);
-  border: 1px solid rgba(0, 168, 168, 0.25);
+  background: rgba(38, 166, 154, 0.12);
+  border: 1px solid rgba(38, 166, 154, 0.3);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -650,7 +662,7 @@ async function enviarFormulario() {
   word-break: break-all;
 }
 
-.info-link:hover { color: #00a8a8; }
+.info-link:hover { color: #26A69A; }
 
 .info-text-simple {
   color: #94a3b8;

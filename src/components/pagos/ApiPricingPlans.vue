@@ -662,7 +662,7 @@ onMounted(() => {
 .certification-title {
   font-size: 16px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 4px;
   display: flex;
   align-items: center;
@@ -671,7 +671,7 @@ onMounted(() => {
 
 .certification-subtitle {
   font-size: 13px;
-  color: #b0b0b0;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
@@ -734,19 +734,19 @@ onMounted(() => {
 .section-title {
   font-size: 24px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .section-subtitle {
   font-size: 14px;
-  color: #b0b0b0;
+  color: var(--text-secondary);
   margin: 0;
   line-height: 1.5;
 }
 
 // Billing Toggle
 .billing-toggle {
-  border: 1px solid #2a2a2a;
+  border: 1px solid var(--surface-border);
   border-radius: 8px;
   overflow: hidden;
 
@@ -761,8 +761,8 @@ onMounted(() => {
 
 // Plan Cards
 .plan-card {
-  background: #0d0d0d;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
   border-radius: 12px;
   position: relative;
   transition: all 0.3s ease;
@@ -843,7 +843,7 @@ onMounted(() => {
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 2;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   padding: 4px;
   border-radius: 8px;
@@ -852,7 +852,7 @@ onMounted(() => {
 .plan-name {
   font-size: 22px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 16px;
 }
 
@@ -886,18 +886,18 @@ onMounted(() => {
 .plan-price-amount {
   font-size: 42px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .plan-price-period {
   font-size: 15px;
-  color: #b0b0b0;
+  color: var(--text-secondary);
   margin-top: 8px;
   display: block;
 }
 
 .plan-description {
-  color: #b0b0b0;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.6;
   margin: 0 0 20px 0;
@@ -906,7 +906,7 @@ onMounted(() => {
 
 .features-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, #2a2a2a, transparent);
+  background: linear-gradient(90deg, transparent, var(--surface-border), transparent);
   margin-bottom: 20px;
 }
 
@@ -921,7 +921,7 @@ onMounted(() => {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  color: #e0e0e0;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.5;
 
@@ -931,7 +931,7 @@ onMounted(() => {
   }
 
   strong {
-    color: #ffffff;
+    color: var(--text-primary);
     font-weight: 600;
   }
 }
@@ -958,7 +958,7 @@ onMounted(() => {
   }
 
   &:not(.popular-button) {
-    border: 1px solid #2a2a2a;
+    border: 1px solid var(--surface-border);
 
     &:hover {
       border-color: #00a8a8;
@@ -989,22 +989,22 @@ onMounted(() => {
   justify-content: center;
   padding: 80px 20px;
   text-align: center;
-  background: #0d0d0d;
-  border: 1px dashed #2a2a2a;
+  background: var(--surface-1);
+  border: 1px dashed var(--surface-border);
   border-radius: 12px;
 }
 
 // Skeleton
 .plan-card-skeleton {
-  background: #0d0d0d;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
   border-radius: 12px;
   padding: 28px 24px;
   height: 500px;
 }
 
 .skeleton-item {
-  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
   border-radius: 6px;
@@ -1021,15 +1021,15 @@ onMounted(() => {
 
 // Confirm Dialog
 .confirm-dialog-card {
-  background: #0d0d0d;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
   border-radius: 12px;
   min-width: 450px;
 }
 
 .summary-box {
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-border);
   border-radius: 8px;
   padding: 20px;
 }
@@ -1037,7 +1037,7 @@ onMounted(() => {
 .summary-row {
   display: flex;
   justify-content: space-between;
-  color: #e0e0e0;
+  color: var(--text-secondary);
   font-size: 15px;
   margin-bottom: 12px;
 
@@ -1046,7 +1046,7 @@ onMounted(() => {
   }
 
   span:first-child {
-    color: #b0b0b0;
+    color: var(--text-secondary);
   }
 
   span:last-child {

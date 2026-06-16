@@ -5,6 +5,16 @@
         <div class="row items-center q-gutter-x-sm">
           <q-btn flat round dense no-caps icon="fab fa-instagram" class="text-white" />
           <q-btn flat round dense no-caps icon="fab fa-github" class="text-white" />
+          <q-btn
+            flat round dense
+            :icon="themeStore.isDark ? 'light_mode' : 'dark_mode'"
+            class="text-accentitems"
+            @click="themeStore.toggleTheme()"
+          >
+            <q-tooltip anchor="bottom middle" self="top middle" :delay="500">
+              {{ themeStore.isDark ? 'Tema claro' : 'Tema oscuro' }}
+            </q-tooltip>
+          </q-btn>
           <div>
             <span v-if="morphGroupModel === 'btn'" class="text-accentitems q-mr-md q-ml-sm">{{
               userName
@@ -133,12 +143,14 @@ import { computed, ref } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'stores/auth-store'
+import { useThemeStore } from 'stores/theme-store'
 import EssentialLink from 'components/EssentialLink.vue'
 
 const $q = useQuasar()
 const router = useRouter()
 
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 const drawer = ref(true)
 
 const email = computed(() => authStore.user?.email || '')

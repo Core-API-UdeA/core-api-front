@@ -17,8 +17,8 @@
       <q-btn-toggle
         v-model="diasAtras"
         toggle-color="primary"
-        color="dark"
-        text-color="grey-5"
+        :color="$q.dark.isActive ? 'dark' : 'grey-2'"
+        :text-color="$q.dark.isActive ? 'grey-5' : 'grey-8'"
         no-caps
         dense
         size="sm"
@@ -548,7 +548,7 @@ function colorMetodo(method) {
 // ─── KPI Cards ───────────────────────────────────────────────────────────────
 
 .kpi-card {
-  background: linear-gradient(145deg, #0d0d0d 0%, #141414 100%);
+  background: var(--coreapi-card-bg);
   border: 1px solid rgba(0, 168, 168, 0.15);
   border-radius: 12px;
   padding: 18px 20px;
@@ -579,14 +579,14 @@ function colorMetodo(method) {
 }
 
 .kpi-label {
-  color: #888;
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.3px;
 }
 
 .kpi-value {
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 28px;
   font-weight: 600;
   line-height: 1;
@@ -595,7 +595,7 @@ function colorMetodo(method) {
 
 .kpi-unit {
   font-size: 14px;
-  color: #888;
+  color: var(--text-muted);
   font-weight: 400;
 }
 
@@ -613,7 +613,7 @@ function colorMetodo(method) {
 // ─── Chart Cards ─────────────────────────────────────────────────────────────
 
 .chart-card {
-  background: linear-gradient(145deg, #0d0d0d 0%, #141414 100%);
+  background: var(--coreapi-card-bg);
   border: 1px solid rgba(0, 168, 168, 0.12);
   border-radius: 12px;
   padding: 18px 20px;
@@ -632,7 +632,7 @@ function colorMetodo(method) {
 }
 
 .chart-title {
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 600;
 }
@@ -779,7 +779,7 @@ function colorMetodo(method) {
 .region-bar-wrap {
   flex: 1;
   height: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--region-bar-bg);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -806,7 +806,7 @@ function colorMetodo(method) {
 }
 
 .skeleton-item {
-  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.6s infinite;
   border-radius: 4px;

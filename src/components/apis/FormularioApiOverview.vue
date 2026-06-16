@@ -16,9 +16,9 @@
               label="Título del API *"
               outlined
               dense
-              dark
+              :dark="$q.dark.isActive"
               color="primary"
-              bg-color="dark"
+              :bg-color="$q.dark.isActive ? 'dark' : undefined"
               :rules="[(val) => !!val || 'El título es requerido']"
               maxlength="150"
               counter
@@ -36,9 +36,9 @@
               label="Tipo de API"
               outlined
               dense
-              dark
+              :dark="$q.dark.isActive"
               color="primary"
-              bg-color="dark"
+              :bg-color="$q.dark.isActive ? 'dark' : undefined"
               :options="tiposApi"
               emit-value
               map-options
@@ -57,9 +57,9 @@
               type="number"
               outlined
               dense
-              dark
+              :dark="$q.dark.isActive"
               color="primary"
-              bg-color="dark"
+              :bg-color="$q.dark.isActive ? 'dark' : undefined"
               step="0.01"
               min="0"
               :rules="[(val) => val >= 0 || 'El precio debe ser mayor o igual a 0']"
@@ -78,9 +78,9 @@
               label="Resumen corto"
               outlined
               dense
-              dark
+              :dark="$q.dark.isActive"
               color="primary"
-              bg-color="dark"
+              :bg-color="$q.dark.isActive ? 'dark' : undefined"
               type="textarea"
               rows="2"
               counter
@@ -227,8 +227,8 @@
                 <q-btn-toggle
                   v-model="editorMode"
                   toggle-color="primary"
-                  color="dark"
-                  text-color="white"
+                  :color="$q.dark.isActive ? 'dark' : 'grey-2'"
+                  :text-color="$q.dark.isActive ? 'white' : 'grey-8'"
                   size="sm"
                   no-caps
                   class="editor-toggle"
@@ -655,7 +655,7 @@ defineExpose({
 }
 
 .api-form-card {
-  background: linear-gradient(145deg, #0d0d0d 0%, #1a1a1a 100%);
+  background: var(--coreapi-form-card-bg);
   border: 1px solid rgba(0, 168, 168, 0.2);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
@@ -672,12 +672,12 @@ defineExpose({
 .custom-select,
 .custom-textarea {
   :deep(.q-field__control) {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--coreapi-input-bg);
     border-radius: 8px;
     transition: all 0.3s ease;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.4);
+      background: var(--coreapi-input-bg-hover);
     }
   }
 
@@ -703,7 +703,7 @@ defineExpose({
 }
 
 .section-title {
-  color: #ffffff;
+  color: var(--coreapi-section-title);
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -747,7 +747,7 @@ defineExpose({
 }
 
 .preview-label {
-  color: #b0b0b0;
+  color: var(--coreapi-preview-label);
   font-size: 13px;
   margin-bottom: 12px;
   font-weight: 500;
@@ -764,11 +764,11 @@ defineExpose({
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--coreapi-tech-card-bg);
   border: 1px solid rgba(0, 168, 168, 0.2);
   border-radius: 8px;
   font-size: 13px;
-  color: #ffffff;
+  color: var(--coreapi-tech-card-color);
   transition: all 0.3s ease;
 
   &:hover {
@@ -840,12 +840,12 @@ defineExpose({
   }
 
   :deep(textarea) {
-    background: rgba(0, 0, 0, 0.4) !important;
+    background: var(--coreapi-textarea-bg) !important;
   }
 }
 
 .preview-pane {
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--coreapi-preview-pane-bg);
   border: 1px solid rgba(0, 168, 168, 0.2);
   padding: 20px;
   overflow-y: auto;
@@ -879,7 +879,7 @@ defineExpose({
     h4,
     h5,
     h6 {
-      color: #ffffff;
+      color: var(--coreapi-readme-heading);
       font-weight: 600;
       margin-top: 24px;
       margin-bottom: 16px;
@@ -911,7 +911,7 @@ defineExpose({
     }
 
     p {
-      color: #b0b0b0;
+      color: var(--coreapi-readme-text);
       line-height: 1.8;
       margin-bottom: 16px;
       font-size: 14px;
@@ -931,7 +931,7 @@ defineExpose({
     }
 
     pre {
-      background: rgba(0, 0, 0, 0.6);
+      background: var(--coreapi-readme-pre-bg);
       border: 1px solid rgba(0, 168, 168, 0.3);
       border-radius: 8px;
       padding: 16px;
@@ -956,7 +956,7 @@ defineExpose({
 
     ul,
     ol {
-      color: #b0b0b0;
+      color: var(--coreapi-readme-text);
       margin-bottom: 16px;
       padding-left: 24px;
 
@@ -969,7 +969,7 @@ defineExpose({
     blockquote {
       background: rgba(0, 168, 168, 0.08);
       border-left: 4px solid #00a8a8;
-      color: #b0b0b0;
+      color: var(--coreapi-readme-text);
       padding: 16px 20px;
       margin-bottom: 16px;
       border-radius: 0 8px 8px 0;
@@ -993,7 +993,7 @@ defineExpose({
         background: rgba(0, 168, 168, 0.2);
 
         th {
-          color: #ffffff;
+          color: var(--coreapi-readme-heading);
           padding: 12px;
           text-align: left;
           font-weight: 600;
@@ -1011,7 +1011,7 @@ defineExpose({
           }
 
           td {
-            color: #b0b0b0;
+            color: var(--coreapi-readme-td);
             padding: 12px;
           }
         }
@@ -1033,13 +1033,13 @@ defineExpose({
     }
 
     strong {
-      color: #ffffff;
+      color: var(--coreapi-readme-strong);
       font-weight: 600;
     }
 
     em {
       font-style: italic;
-      color: #c0c0c0;
+      color: var(--coreapi-readme-em);
     }
   }
 }

@@ -30,8 +30,8 @@ export function usePostmanCollection() {
 
       // Base URL del gateway de CoreAPI
       const gatewayBase = window.location.origin.includes('localhost')
-        ? 'https://core-api-back.onrender.com/scapi'
-        : window.location.origin + '/scapi'
+        ? 'http://localhost:3000'
+        : 'https://core-api-back.onrender.com' + '/scapi'
 
       // Obtener documentación completa (endpoints + params + bodies + responses)
       let documentacion = []

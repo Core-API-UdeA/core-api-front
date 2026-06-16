@@ -113,7 +113,8 @@ const routes = [
   {
     path: '/faq',
     name: 'faq',
-    component: () => import('pages/FaqPage.vue'),
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/FaqPage.vue') }],
   },
 ]
 

@@ -19,7 +19,9 @@
           <q-btn flat round dense no-caps icon="fab fa-instagram" class="text-white" />
           <q-btn flat round dense no-caps icon="fab fa-github" class="text-white" />
           <q-btn
-            flat round dense
+            flat
+            round
+            dense
             :icon="themeStore.isDark ? 'light_mode' : 'dark_mode'"
             class="text-accentitems"
             @click="themeStore.toggleTheme()"
@@ -70,6 +72,7 @@
           class="text-white"
           @click="$router.push('/contacto')"
         />
+        <q-btn flat no-caps label="FAQ" class="text-white" @click="$router.push('/faq')" />
         <q-btn
           flat
           no-caps
